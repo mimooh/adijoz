@@ -1,0 +1,171 @@
+html {
+	font-size: 62.5%;
+}
+
+body {
+	background: #333;
+	margin:0px;
+	padding:0px;
+	font-family: "Sans";
+	font-size: 1.6rem;
+	color: #ddd;
+}
+
+td {
+	text-align: center;
+	padding: 6px;
+	color: #fff;
+	border:#333 1px solid;
+}
+
+th {
+	padding: 6px;
+	color: #fff;
+	font-weight: normal;
+	background: #111;
+	border: 1px solid #333;
+}
+
+td.datepickerblock {
+	background: #222;
+}
+
+
+/*{{{ table */
+
+table {
+	border-collapse: collapse;
+	font-size: 13px;
+	width: 780px;
+	text-shadow: 1px 1px 0px #222;
+	margin:10px;
+	border:#444 1px solid;
+}
+
+
+table a:link, table a:visited {
+	color: #fff;
+	text-decoration:none;
+}
+
+table a:active, table a:hover {
+	color: #fff;
+	text-decoration:none;
+}
+
+
+/*}}}*/
+.tableMenu {/*{{{*/
+	width: 0px;
+	border: 0;
+	box-shadow: none;
+}
+.tableCenter td {
+	text-align: center;
+}
+.tableNoWrap td {
+    white-space:nowrap;
+}
+.tableNoWrapAlignRight td {
+    white-space:nowrap;
+	text-align: right;
+}
+
+.tableNoWrapCenter td {
+    white-space:nowrap;
+	text-align:center;
+}
+
+.tableNoTdLines td {
+	border: none;
+	text-align:center;
+}
+
+.tableZalacznikowa td {
+	background: #404;
+	border: none;
+}
+
+.tableMenu a:link, .tableMenu a:visited {
+	color: #c8c8c8;
+	border: 1px solid #000;
+}
+
+.tableMenu tr td {
+    white-space:nowrap;
+	border: none;
+	text-align: center;
+	padding:6px 2px;
+}
+
+.tableMenu a:hover, .tableMenu a:active {
+	color: #fff;
+	border: 1px solid #000;
+	text-shadow: 0 0px 1px rgba(0,0,0,0.1);
+}
+/*}}}*/
+
+label.lradio{
+	display: inline-block;
+	cursor: default;
+	user-select: none;
+	padding: 4px;
+}
+
+#leave_types {
+	display:none;
+}
+
+#msg {
+	opacity:0.9;
+    cursor:default;
+	position:absolute;
+	text-align:center;
+	left:10px;
+	top:10px;
+	background-color: #046;
+	display:none;
+	color:#fff;
+	z-index: 10;
+	padding: 30px;
+}
+
+#t_preview{
+	font-size: 10px;
+	display:none;
+    cursor:default;
+	float:right;
+	background-color: #064;
+	color:#fff;
+	z-index: 2;
+	padding: 30px;
+}
+
+
+/*}}}*/
+input[type="submit"] {/*{{{*/
+    padding:4px 8px; 
+	margin:1px;
+    border-radius: 2px; 
+	color: #fff;
+    background:#06a;
+    border:0 none;
+    cursor:pointer;
+}
+
+input[type="submit"]:hover, .blink:hover, .rlink:hover, .nocolor:hover {
+	background: #c60;
+}
+
+input[type="text"], input[type="password"]  {
+    border-radius: 2px; 
+    border:0 none;
+    padding:5px 8px; 
+}
+textarea {
+    padding:5px;
+	color: #fff;
+	background: #333;
+	border: 1px solid #555;
+}
+/*}}}*/
