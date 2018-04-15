@@ -1,17 +1,7 @@
 <?php
-session_start();
+session_name('leavensky');
+require_once("inc.php");
 
-function dd() {/*{{{*/
-	echo "<dd>";
-	foreach(func_get_args() as $v) {
-		echo "<pre>";
-		$out=print_r($v,1);
-		echo htmlspecialchars($out);
-		echo "</pre>";
-	}
-	echo "<br><br><br><br>";
-	echo "</dd>";
-}/*}}}*/
 function head() { /*{{{*/
 	echo "
 <HTML><HEAD>
@@ -24,48 +14,42 @@ function head() { /*{{{*/
 <script type='text/javascript' src='js/datepicker.js'></script>
 <script type='text/javascript' src='js/script.js'></script>
 <div id=msg></div>
-<div id=t_preview></div>
+<div id=preview></div>
 ";
 }
 /*}}}*/
-function leave_types() {/*{{{*/
+function conf_leave_types() {/*{{{*/
 	#if(!empty($_SESSION['leave_types'])) {
-		$conf=array();
-		$conf=$_SESSION['leave_types']=array();
+		$conf=json_decode(file_get_contents("conf.json"),1)['leave_types'];
+		$_SESSION['leave_types']=array();
+		foreach(array_values($conf) as $v) { 
+			$_SESSION['leave_types'][$v[0]]=array('full'=>$v[1]);
+		}	
+		conf_leave_limits();
 
-		$conf['shorcuts']=array(
-			"zalegly"      => "ZAL",
-			"wypoczynkowy" => "WYP",
-			"dodatkowy"    => "DOD",
-			"dwps"         => "DWPS",
-			"zl"           => "ZL",
-		);
-
-		$conf['titles']=array(
-			"zalegly"      => "zaległy",
-			"wypoczynkowy" => "wypoczynkowy",
-			"dodatkowy"    => "dodatkowy",
-			"dwps"         => "dzień wolny po służbie",
-			"zl"           => "zwolnienie lekarskie",
-		);
-
-		$conf['limits']=array(
-			"zalegly"      => 2,
-			"wypoczynkowy" => 15,
-			"dodatkowy"    => 3,
-			"dwps"         => 3,
-			"zl"           => 0,
-		);
-
-		$_SESSION['leave_types']=$conf;
-		$leave_types=implode(",", array_keys($conf['shorcuts']));
-		echo "<div id=leave_types>$leave_types</div>";
+		echo "
+		<script type='text/javascript'>
+			var leaveTypes=".json_encode(array_keys($_SESSION['leave_types'])).";
+			var lType=".json_encode($conf[0][0]).";
+		</script>
+		";
 	#}
 
 }
 /*}}}*/
+function conf_leave_limits() {/*{{{*/
+	// Fetch from DB
+	foreach($_SESSION['leave_types'] as $k=>$v) { 
+		$_SESSION['leave_types'][$k]['limit']=7;
+	}	
+}
+/*}}}*/
 function selected_dates() {/*{{{*/
-	$dates=json_encode(array('Fri Jan 12 2018', 'Sat Jan 13 2018'));
+	$leaves=[];
+	foreach($_SESSION['ll']->query("SELECT * FROM leavensky") as $v) { 
+		$leaves[]=$v['leave_day'];
+	}
+	$dates=json_encode($leaves);
 	echo "
 	<script type='text/javascript'>
 	    var selectedDates=$dates;
@@ -74,22 +58,22 @@ function selected_dates() {/*{{{*/
 }
 /*}}}*/
 function planner_form() { /*{{{*/
-	$conf=$_SESSION['leave_types'];
+	extract($_SESSION['i18n']);
+	$leave_types=$_SESSION['leave_types'];
 
 	$labels='';
-	foreach($conf['shorcuts'] as $k=>$v) { 
-		$labels.="<th><label class=lradio id='l$k'  title='".$conf['titles'][$k]."'>$v</label>";
-
+	foreach($leave_types as $k=>$v) { 
+		$labels.="<th><label class=lradio id='l$k' title='".$v['full']."'>$k</label>";
 	}
 
 	$left='';
-	foreach($conf['limits'] as $k=>$v) { 
-		$left.="<td><input id=$k type=text size=1 name=$k value='$v' disabled>";
+	foreach($leave_types as $k=>$v) { 
+		$left.="<td><input id=$k type=text size=1 name=$k value='$v[limit]' disabled>";
 	}
 
 	$limits ='';
-	foreach($conf['limits'] as $k=>$v) { 
-		$limits.="<td><input type=text size=1 value='$v' disabled>";
+	foreach($leave_types as $k=>$v) { 
+		$limits.="<td><input type=text size=1 value='$v[limit]' disabled>";
 	}
 
 	echo "
@@ -100,31 +84,33 @@ function planner_form() { /*{{{*/
 	<th>Wybierz
 	$labels
 	<tr>
-	<td>Pozostało
+	<td>$i18n_days_left
 	$left
 	<tr>
-	<td>Przydział
+	<td>$i18n_days_allocated
 	$limits
 	</table>
 	<div id='multi-calendar'> </div>
 	<br><br>
-	<input id=timeoff_submit type=submit value='OK'>
+	<input id=leavensky_submit type=submit value='OK'>
 	</form>
 	";
 
 }
 /*}}}*/
-function output() { /*{{{*/
+function submit() { /*{{{*/
 	echo "\$_REQUEST";
-	#$dates=array_map('strtotime', explode(",", $_REQUEST['collect']));
-	dd(json_decode($_REQUEST['collect']));
+	foreach(json_decode($_REQUEST['collect'],1) as $k=>$v) {
+		$date=date('Y-m-d', strtotime($k));
+		$_SESSION['ll']->query("INSERT INTO leavensky(leave_user,leave_type,leave_day,creator) values(1,$1,$2,1)", array($v,$date));
+	}
 }
 /*}}}*/
 
 head();
 selected_dates();
-leave_types();
+conf_leave_types();
 planner_form();
-output();
+submit();
 
 ?>

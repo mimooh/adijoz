@@ -1,0 +1,16 @@
+{ 
+"comment": "Schema for leave_types: ['shorname', 'fullname' ]",
+
+"lang": "pl",
+
+"leave_types": 
+[
+	[ "zal"  , "zaległy" ]              ,
+	[ "wyp"  , "wypoczynkowy" ]         ,
+	[ "dod"  , "dodatkowy" ]            ,
+	[ "sl"   , "służba" ]               ,
+	[ "dwps" , "d.w. po służbie" ]      ,
+	[ "zl"   , "zwolnienie lekarskie" ]
+]
+
+}
