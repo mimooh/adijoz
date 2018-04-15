@@ -49,6 +49,7 @@ END;
 
 CREATE TABLE leavensky (
 	id serial PRIMARY KEY, 
+	year int,
 	leave_user int,
     leave_type text,
 	leave_day date,
@@ -56,11 +57,27 @@ CREATE TABLE leavensky (
 	modified timestamp default current_timestamp
 );
 
+CREATE TABLE leavensky_summary(
+	id serial PRIMARY KEY, 
+	year int,
+	leave_user int,
+	creator int,
+	taken text,
+	limits text,
+	modified timestamp default current_timestamp
+);
+INSERT INTO leavensky_summary(year,leave_user,creator,limits) values(2018,1,666,'{"zal":5,"wyp":7,"dod":3,"sl":2,"dwps":1,"zl":0}');
+INSERT INTO leavensky_summary(year,leave_user,creator,limits) values(2018,2,666,'{"zal":15,"wyp":17,"dod":13,"sl":2,"dwps":1,"zl":0}');
+
 CREATE TRIGGER update_modified BEFORE UPDATE ON leavensky FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
 ALTER TABLE leavensky OWNER TO $DB_USER;
 GRANT ALL ON TABLE leavensky TO $DB_USER;
 GRANT ALL ON SEQUENCE leavensky_id_seq TO $DB_USER;
+
+ALTER TABLE leavensky_summary OWNER TO $DB_USER;
+GRANT ALL ON TABLE leavensky_summary TO $DB_USER;
+GRANT ALL ON SEQUENCE leavensky_summary_id_seq TO $DB_USER;
 
 
 EOF

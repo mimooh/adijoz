@@ -25,7 +25,7 @@ function conf_leave_types() {/*{{{*/
 		foreach(array_values($conf) as $v) { 
 			$_SESSION['leave_types'][$v[0]]=array('full'=>$v[1]);
 		}	
-		conf_leave_limits();
+		conf_leave_summary();
 
 		echo "
 		<script type='text/javascript'>
@@ -37,16 +37,21 @@ function conf_leave_types() {/*{{{*/
 
 }
 /*}}}*/
-function conf_leave_limits() {/*{{{*/
+function conf_leave_summary() {/*{{{*/
 	// Fetch from DB
+	$r=$_SESSION['ll']->query("SELECT taken,limits FROM leavensky_summary WHERE leave_user=$1 AND year=$2", array($_SESSION['user_id'], 2018)); 
+	$taken=json_decode($r[0]['taken'],1);
+	$limits=json_decode($r[0]['limits'],1);
+
 	foreach($_SESSION['leave_types'] as $k=>$v) { 
-		$_SESSION['leave_types'][$k]['limit']=7;
+		$_SESSION['leave_types'][$k]['limits']=$limits[$k];
+		$_SESSION['leave_types'][$k]['left']=$limits[$k] - $taken[$k];
 	}	
 }
 /*}}}*/
 function selected_dates() {/*{{{*/
 	$leaves=[];
-	foreach($_SESSION['ll']->query("SELECT * FROM leavensky") as $v) { 
+	foreach($_SESSION['ll']->query("SELECT * FROM leavensky WHERE leave_user=$1", array($_SESSION['user_id'])) as $v) { 
 		$leaves[]=$v['leave_day'];
 	}
 	$dates=json_encode($leaves);
@@ -68,12 +73,12 @@ function planner_form() { /*{{{*/
 
 	$left='';
 	foreach($leave_types as $k=>$v) { 
-		$left.="<td><input id=$k type=text size=1 name=$k value='$v[limit]' disabled>";
+		$left.="<td><input id=$k type=text size=1 name=$k value='$v[left]' disabled>";
 	}
 
 	$limits ='';
 	foreach($leave_types as $k=>$v) { 
-		$limits.="<td><input type=text size=1 value='$v[limit]' disabled>";
+		$limits.="<td><input type=text size=1 value='$v[limits]' disabled>";
 	}
 
 	echo "
@@ -87,7 +92,7 @@ function planner_form() { /*{{{*/
 	<td>$i18n_days_left
 	$left
 	<tr>
-	<td>$i18n_days_allocated
+	<td>Limit
 	$limits
 	</table>
 	<div id='multi-calendar'> </div>
@@ -100,13 +105,20 @@ function planner_form() { /*{{{*/
 /*}}}*/
 function submit() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
-	foreach(json_decode($_REQUEST['collect'],1) as $k=>$v) {
+	$collect=json_decode($_REQUEST['collect'],1); 
+	$_SESSION['ll']->query("DELETE FROM leavensky WHERE year=$1 AND leave_user=$2", array($_SESSION['year'],$_SESSION['user_id']));
+	foreach($collect as $k=>$v) {
 		$date=date('Y-m-d', strtotime($k));
-		$_SESSION['ll']->query("INSERT INTO leavensky(leave_user,leave_type,leave_day,creator) values(1,$1,$2,1)", array($v,$date));
+		$_SESSION['ll']->query("INSERT INTO leavensky(year,leave_user,leave_type,leave_day,creator) values($1,$2,$3,$4,666)", array($_SESSION['year'],$_SESSION['user_id'],$v,$date));
 	}
+
+	$taken=json_encode(array_count_values($collect));
+	$_SESSION['ll']->query("UPDATE leavensky_summary SET taken=$1, creator=666 WHERE year=$2 AND leave_user=$3", array($taken, $_SESSION['year'],$_SESSION['user_id']));
 }
 /*}}}*/
 
+$_SESSION['user_id']=2;
+$_SESSION['year']=2018;
 head();
 submit();
 selected_dates();
