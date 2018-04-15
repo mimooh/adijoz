@@ -1,7 +1,8 @@
 { 
-"comment": "Schema for leave_types: ['shorname', 'fullname' ]",
+"comment1": "You can choose/create languages under messages/ directory.",
+"comment2": "Schema for leave_types: ['shorname', 'fullname' ]",
 
-"lang": "pl",
+"lang": "en",
 
 "leave_types": 
 [

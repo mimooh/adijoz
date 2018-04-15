@@ -81,7 +81,7 @@ function planner_form() { /*{{{*/
 	<input type=hidden name=collect id=collect>
 	<table style='width:1px'>
 	<tr>
-	<th>Wybierz
+	<th>$i18n_choose
 	$labels
 	<tr>
 	<td>$i18n_days_left
@@ -99,7 +99,7 @@ function planner_form() { /*{{{*/
 }
 /*}}}*/
 function submit() { /*{{{*/
-	echo "\$_REQUEST";
+	if(empty($_REQUEST['collect'])) { return; }
 	foreach(json_decode($_REQUEST['collect'],1) as $k=>$v) {
 		$date=date('Y-m-d', strtotime($k));
 		$_SESSION['ll']->query("INSERT INTO leavensky(leave_user,leave_type,leave_day,creator) values(1,$1,$2,1)", array($v,$date));
@@ -108,9 +108,9 @@ function submit() { /*{{{*/
 /*}}}*/
 
 head();
+submit();
 selected_dates();
 conf_leave_types();
 planner_form();
-submit();
 
 ?>
