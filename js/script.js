@@ -13,6 +13,17 @@ $(function() {//{{{
 		$("#collect").val(JSON.stringify(collect));
 	});
 
+
+	$("#preview").html("");
+	console.log(selectedDates);
+	for(var k in selectedDates) { 
+		console.log("k", k);
+		// TODO
+		$("#preview").append("<br><br><b>"+selectedDates[k]+"("+selectedDates[k].length+")</b><br>");
+		//$("#preview").append(selectedDates[k].join("<br>"));
+	}
+	$('#preview').slideDown();
+
 	displayCalendar();
 });
 //}}}
@@ -21,8 +32,14 @@ function collectAlt() {//{{{
 		collect_alt[leaveTypes[k]]=[];
 	}
 
+	var date;
 	for(var k in collect) {
-		collect_alt[collect[k]].push("&nbsp;&nbsp;"+k);
+		collect_alt[collect[k]].push("&nbsp;&nbsp;"+moment(new Date(k)).format("YYYY-MM-DD"));
+	}
+
+	for(var k in collect) {
+		date=new Date(k);
+		collect_alt[collect[k]].sort();
 	}
 
 	$("#preview").html("");
@@ -30,7 +47,6 @@ function collectAlt() {//{{{
 		$("#preview").append("<br><br><b>"+k+"("+collect_alt[k].length+")</b><br>");
 		$("#preview").append(collect_alt[k].join("<br>"));
 	}
-	$('#preview').slideDown();
 }
 //}}}
 function displayCalendar() {//{{{
@@ -45,7 +61,7 @@ function displayCalendar() {//{{{
 	$('#multi-calendar').DatePicker({
 		mode: 'multiple',
 		inline: true,
-		date: selectedDates,
+		date: Object.keys(selectedDates),
 		starts: 1,
 		calendars: 8 ,
 		onChange: function(data){
@@ -64,7 +80,6 @@ function displayCalendar() {//{{{
 				licznik++;
 			}
 			collectAlt();
-			console.log(collect);
 			$(".lradio").css("background-color", "transparent");
 			$("#l"+lType).css("background-color", "#800");
 
@@ -79,3 +94,5 @@ function displayCalendar() {//{{{
   });
 }
 //}}}
+
+

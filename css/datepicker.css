@@ -75,7 +75,7 @@ td.datepickerNotInMonth a {
   color: #666666;
 }
 tbody.datepickerDays td.datepickerSelected{
-  background: #600;
+  background: #a00;
 }
 tbody.datepickerDays td.datepickerNotInMonth.datepickerSelected {
   background: #17384d;
