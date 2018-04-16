@@ -45,7 +45,8 @@ function conf_leave_summary() {/*{{{*/
 
 	foreach($_SESSION['leave_types'] as $k=>$v) { 
 		$_SESSION['leave_types'][$k]['limits']=$limits[$k];
-		$_SESSION['leave_types'][$k]['left']=$limits[$k] - $taken[$k];
+		#$_SESSION['leave_types'][$k]['left']=$limits[$k] - $taken[$k];
+		$_SESSION['leave_types'][$k]['left']=$limits[$k]; # TODO 
 	}	
 }
 /*}}}*/
