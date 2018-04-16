@@ -71,6 +71,7 @@ INSERT INTO leavensky_summary(year,leave_user,creator,limits) values(2018,2,666,
 
 CREATE TRIGGER update_modified BEFORE UPDATE ON leavensky FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
+
 ALTER TABLE leavensky OWNER TO $DB_USER;
 GRANT ALL ON TABLE leavensky TO $DB_USER;
 GRANT ALL ON SEQUENCE leavensky_id_seq TO $DB_USER;
@@ -78,6 +79,11 @@ GRANT ALL ON SEQUENCE leavensky_id_seq TO $DB_USER;
 ALTER TABLE leavensky_summary OWNER TO $DB_USER;
 GRANT ALL ON TABLE leavensky_summary TO $DB_USER;
 GRANT ALL ON SEQUENCE leavensky_summary_id_seq TO $DB_USER;
+
+ALTER DATABASE leavensky OWNER TO $DB_USER;
+GRANT ALL PRIVILEGES ON DATABASE leavensky TO $DB_USER;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $DB_USER;
+GRANT ALL PRIVILEGES  ON ALL SEQUENCES IN SCHEMA public TO $DB_USER;
 
 
 EOF
