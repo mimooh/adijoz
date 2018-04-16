@@ -3,7 +3,7 @@
 DB_USER='leavensky'  
 DB_PASS='secret'  
 
-# End of configuration. Run this shell script to setup postgres for leavensky project.
+# End of configuration. Run this shell script to setup postgres for leavensky project. Then restart apache.
 
 # init #{{{
 USER=`id -ru`
