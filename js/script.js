@@ -1,8 +1,8 @@
 var collect={};
-var collect_alt={};
+var collect2={};
+var selectedDates=[];
 // lType comes from php
-// leaveTypes comes from php
-// selectedDates comes from php
+// leaveSummary comes from php
 
 $(function() {//{{{
 	$("body").on("click", "#msg", function(){
@@ -13,14 +13,14 @@ $(function() {//{{{
 		$("#collect").val(JSON.stringify(collect));
 	});
 
+	for(var k in leaveSummary) { 
+		selectedDates=selectedDates.concat(leaveSummary[k]['details']);
+	}
 
 	$("#preview").html("");
-	console.log(selectedDates);
-	for(var k in selectedDates) { 
-		console.log("k", k);
-		// TODO
-		$("#preview").append("<br><br><b>"+selectedDates[k]+"("+selectedDates[k].length+")</b><br>");
-		//$("#preview").append(selectedDates[k].join("<br>"));
+	for(var k in leaveSummary) { 
+		$("#preview").append("<br><br><b>"+leaveSummary[k]['full']+"("+leaveSummary[k]['taken']+")</b><br>");
+		$("#preview").append(leaveSummary[k]['details'].join("<br>"));
 	}
 	$('#preview').slideDown();
 
@@ -28,24 +28,25 @@ $(function() {//{{{
 });
 //}}}
 function collectAlt() {//{{{
-	for(var k in leaveTypes) {
-		collect_alt[leaveTypes[k]]=[];
+	// collect and collect2 contain the same data, just organized differently
+	var date;
+	for(var k in leaveSummary) {
+		collect2[k]=[];
 	}
 
-	var date;
 	for(var k in collect) {
-		collect_alt[collect[k]].push("&nbsp;&nbsp;"+moment(new Date(k)).format("YYYY-MM-DD"));
+		collect2[collect[k]].push("&nbsp;&nbsp;"+moment(new Date(k)).format("YYYY-MM-DD"));
 	}
 
 	for(var k in collect) {
 		date=new Date(k);
-		collect_alt[collect[k]].sort();
+		collect2[collect[k]].sort();
 	}
 
 	$("#preview").html("");
-	for(var k in collect_alt) { 
-		$("#preview").append("<br><br><b>"+k+"("+collect_alt[k].length+")</b><br>");
-		$("#preview").append(collect_alt[k].join("<br>"));
+	for(var k in collect2) { 
+		$("#preview").append("<br><br><b>"+leaveSummary[k]['full']+"("+collect2[k].length+")</b><br>");
+		$("#preview").append(collect2[k].join("<br>"));
 	}
 }
 //}}}
@@ -61,14 +62,14 @@ function displayCalendar() {//{{{
 	$('#multi-calendar').DatePicker({
 		mode: 'multiple',
 		inline: true,
-		date: Object.keys(selectedDates),
+		date: selectedDates,
 		starts: 1,
 		calendars: 8 ,
 		onChange: function(data){
 			if(data.length >= prev) { 
 				collect[data[data.length-1]]=lType;
-				licznik=parseInt($("#"+lType).val());
-				licznik--;
+				counter=parseInt($("#"+lType).val());
+				counter--;
 			} else {
 				for(var k in collect) { 
 					if (!(data.includes(k))) { 
@@ -76,20 +77,21 @@ function displayCalendar() {//{{{
 						delete collect[k];
 					}
 				}
-				licznik=parseInt($("#"+lType).val());
-				licznik++;
+				counter=parseInt($("#"+lType).val());
+				counter++;
 			}
 			collectAlt();
 			$(".lradio").css("background-color", "transparent");
 			$("#l"+lType).css("background-color", "#800");
 
-			if(licznik < 0) {
+			if(counter < 0) {
 				//$("#msg").html(lType+": Exceeded the limit");
 				$("#msg").html(lType+": Przesadziłeś z urlopem<br>Musisz wykasować nadmiarowe dni.<br>[Zamknij]");
 				$("#msg").slideDown();
 			}
 			prev=data.length;
-			$('#'+lType).val(licznik);
+			$('#'+lType).val(counter);
+			console.log(collect);
 	}
   });
 }
