@@ -10,8 +10,8 @@
 	[ "wyp"  , "wypoczynkowy" ]         ,
 	[ "dod"  , "dodatkowy" ]            ,
 	[ "sl"   , "służba" ]               ,
-	[ "dwps" , "d.w. po służbie" ]      ,
-	[ "zl"   , "zwolnienie lekarskie" ]
+	[ "dwps" , "d.w.po.sł" ]			,
+	[ "zl"   , "zw.lekarskie" ]
 ]
 
 }

@@ -108,7 +108,7 @@ label.lradio{
 	display: inline-block;
 	cursor: default;
 	user-select: none;
-	padding: 4px;
+	padding: 8px;
 }
 
 #msg {
