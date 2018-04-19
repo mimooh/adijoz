@@ -1,30 +1,43 @@
 var collect={};
 var collect2={};
 var selectedDates=[];
-// lType comes from php
-// leaveSummary comes from php
 
+function dbInit() {//{{{
+	console.log(setup);
+	var leaves = TAFFY(setup['leaves']);
+	var summary = TAFFY(setup['summary']);
+
+	//friends({gender:"M"}).each(function (r) {
+	//	friends({id:r.id}).update({name:"ZZ"});
+	//});
+	console.log(leaves().select("leave_day"));
+}
+//}}}
 $(function() {//{{{
+	dbInit();
 	$("body").on("click", "#msg", function(){
 		$('#msg').slideUp();
 	});
+	dbInit();
 
 	$("#leavensky_submit").click(function(){
 		$("#collect").val(JSON.stringify(collect));
 	});
+	console.log("LV", leaveSummary);
 
 	for(var k in leaveSummary) { 
-		selectedDates=selectedDates.concat(leaveSummary[k]['details']);
+		selectedDates=selectedDates.concat(leaveSummary[k]['dates']);
 	}
 
 	$("#preview").html("");
 	for(var k in leaveSummary) { 
 		$("#preview").append("<br><br><b>"+leaveSummary[k]['full']+"("+leaveSummary[k]['taken']+")</b><br>");
-		$("#preview").append(leaveSummary[k]['details'].join("<br>"));
+		$("#preview").append(leaveSummary[k]['dates'].join("<br>"));
 	}
 	$('#preview').slideDown();
 
 	displayCalendar();
+
 });
 //}}}
 function collectAlt() {//{{{
@@ -35,7 +48,7 @@ function collectAlt() {//{{{
 	}
 
 	for(var k in collect) {
-		collect2[collect[k]].push("&nbsp;&nbsp;"+moment(new Date(k)).format("YYYY-MM-DD"));
+		collect2[collect[k]].push(moment(new Date(k)).format("YYYY-MM-DD"));
 	}
 
 	for(var k in collect) {
@@ -92,6 +105,8 @@ function displayCalendar() {//{{{
 			prev=data.length;
 			$('#'+lType).val(counter);
 			console.log(collect);
+			console.log("c2", collect2);
+			console.log("data", data);
 	}
   });
 }

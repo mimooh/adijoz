@@ -607,8 +607,7 @@
         } else {
           dates = new Array();
           $(options.date).each(function(i, val){
-			var today = new Date(val);
-			var z=today.toDateString();
+			var z=moment(new Date(val)).format("YYYY-MM-DD");
             dates.push(z);
           });
         }
