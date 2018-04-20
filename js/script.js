@@ -37,9 +37,13 @@ function updateDB(data) {//{{{
 //}}}
 function updatePreview() {//{{{
 	$("#preview").html("");
+	$("#preview").css("background-color", "#064");
 	var c;
 	for(var k in setup['titles']) { 
 		c=leaves({ltype:k}).select("lday");
+		if(c.length > setup['summary']['limits'][k]) {
+			$("#preview").css("background-color", "#a00");
+		}
 		$("#preview").append("<br><br><b>"+setup['titles'][k]+"("+c.length+"/"+setup['summary']['limits'][k]+")</b><br>");
 		$("#preview").append("&nbsp;&nbsp;"+c.join("<br>&nbsp;&nbsp;"));
 	}
@@ -60,7 +64,8 @@ $(function() {//{{{
 	});
 
 	$("#leavensky_submit").click(function(){
-		$("#collect").val(JSON.stringify(collect));
+		$("#collect").val(JSON.stringify(leaves().select("lday", "ltype")));
+
 	});
 	updatePreview();
 	displayCalendar();
@@ -74,7 +79,7 @@ function displayCalendar() {//{{{
 		inline: true,
 		date: leaves().select("lday"),
 		starts: 1,
-		calendars: 8 ,
+		calendars: 12 ,
 		onChange: function(data){
 			updateDB(data);
 			updatePreview();

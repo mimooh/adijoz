@@ -70,7 +70,7 @@ CREATE TABLE leavensky (
 	modified timestamp default current_timestamp
 );
 
-CREATE TABLE leavensky_summary(
+CREATE TABLE summary(
 	id serial PRIMARY KEY, 
 	year int,
 	user_id int,
@@ -79,8 +79,8 @@ CREATE TABLE leavensky_summary(
 	limits text,
 	modified timestamp default current_timestamp
 );
-INSERT INTO leavensky_summary(year,user_id,creator_id,limits) values(2018,1,666,'{"zal":5,"wyp":7,"dod":3,"sl":2,"dwps":1,"zl":0}');
-INSERT INTO leavensky_summary(year,user_id,creator_id,limits) values(2018,2,666,'{"zal":15,"wyp":17,"dod":13,"sl":2,"dwps":1,"zl":0}');
+INSERT INTO summary(year,user_id,creator_id,limits) values(2018,1,666,'{"zal":5,"wyp":7,"dod":3,"sl":2,"dwps":1,"zl":0}');
+INSERT INTO summary(year,user_id,creator_id,limits) values(2018,2,666,'{"zal":15,"wyp":17,"dod":13,"sl":2,"dwps":1,"zl":0}');
 
 CREATE TRIGGER update_modified BEFORE UPDATE ON leavensky FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
@@ -89,9 +89,9 @@ ALTER TABLE leavensky OWNER TO $LEAVENSKY_DB_USER;
 GRANT ALL ON TABLE leavensky TO $LEAVENSKY_DB_USER;
 GRANT ALL ON SEQUENCE leavensky_id_seq TO $LEAVENSKY_DB_USER;
 
-ALTER TABLE leavensky_summary OWNER TO $LEAVENSKY_DB_USER;
-GRANT ALL ON TABLE leavensky_summary TO $LEAVENSKY_DB_USER;
-GRANT ALL ON SEQUENCE leavensky_summary_id_seq TO $LEAVENSKY_DB_USER;
+ALTER TABLE summary OWNER TO $LEAVENSKY_DB_USER;
+GRANT ALL ON TABLE summary TO $LEAVENSKY_DB_USER;
+GRANT ALL ON SEQUENCE summary_id_seq TO $LEAVENSKY_DB_USER;
 
 ALTER DATABASE leavensky OWNER TO $LEAVENSKY_DB_USER;
 GRANT ALL PRIVILEGES ON DATABASE leavensky TO $LEAVENSKY_DB_USER;
