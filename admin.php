@@ -30,8 +30,13 @@ function form() { /*{{{*/
 		$limits=json_decode($r['limits'],1);
 		$taken=json_decode($r['taken'],1);
 		echo "<tr><td>$r[id]";
+		$bg="";
 		foreach($limits as $k=>$i) { 
-			echo "<td><input size=2 value=$i name=collect[$r[id]][$k]><td>".$taken[$k];
+			if($taken[$k] > $limits[$k]) { $bg="style='background-color: #a00'"; }
+			if($taken[$k] < $limits[$k]) { $bg="style='background-color: #08a'"; }
+
+			echo "<td><input size=2 value=$i name=collect[$r[id]][$k]><td $bg>".$taken[$k];
+			$bg="";
 		}
 	}
 

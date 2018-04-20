@@ -5,16 +5,16 @@ LEAVENSKY_DB_PASS='secret'
 
 # End of configuration. Run this shell script to setup postgres for leavensky project. Then restart apache.
 
-# init #{{{
+# init 
 USER=`id -ru`
 [ "X$USER" == "X0" ] && { echo "Don't run as root / sudo"; exit; }
 
-[ $LEAVENSKY_DB_PASS == 'secret' ] && { 
+[ $LEAVENSKY_DB_PASS == 'secret1' ] && {  # TODO
 	echo "Password for leavensky user needs to be changed from the default='secret'."; 
 	echo
 	exit;
 } 
-#}}}
+
 # www-data user needs LEAVENSKY_DB vars. They are kept in www-data environment: /etc/apache2/envvars #{{{
 temp=`mktemp`
 sudo cat /etc/apache2/envvars | grep -v LEAVENSKY_DB_USER | grep -v LEAVENSKY_DB_PASS > $temp
@@ -64,10 +64,9 @@ CREATE TABLE leavensky (
 	id serial PRIMARY KEY, 
 	year int,
 	user_id int,
-    ltype text,
-	lday date,
 	creator_id int,
-	modified timestamp default current_timestamp
+	modified timestamp default current_timestamp,
+	leaves text
 );
 
 CREATE TABLE summary(
@@ -75,12 +74,15 @@ CREATE TABLE summary(
 	year int,
 	user_id int,
 	creator_id int,
+	modified timestamp default current_timestamp,
 	taken text,
-	limits text,
-	modified timestamp default current_timestamp
+	limits text
 );
-INSERT INTO summary(year,user_id,creator_id,limits) values(2018,1,666,'{"zal":5,"wyp":7,"dod":3,"sl":2,"dwps":1,"zl":0}');
-INSERT INTO summary(year,user_id,creator_id,limits) values(2018,2,666,'{"zal":15,"wyp":17,"dod":13,"sl":2,"dwps":1,"zl":0}');
+INSERT INTO leavensky(year , user_id , creator_id , leaves) values(2018  , 1 , 666 , '[["2018-01-05","zal"] ,["2018-01-06","zal"]]');
+INSERT INTO leavensky(year , user_id , creator_id , leaves) values(2018  , 2 , 666 , '[["2018-02-05","zal"] ,["2018-02-06","zal"]]');
+
+INSERT INTO summary(year , user_id , creator_id , limits) values(2018 , 1 , 666 , '{"zal":3 , "wyp":3 , "dod":3 , "sl":3 , "dwps":3 , "zl":1}');
+INSERT INTO summary(year , user_id , creator_id , limits) values(2018 , 2 , 666 , '{"zal":4 , "wyp":4 , "dod":4 , "sl":4 , "dwps":4 , "zl":1}');
 
 CREATE TRIGGER update_modified BEFORE UPDATE ON leavensky FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 

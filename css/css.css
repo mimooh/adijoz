@@ -6,7 +6,7 @@ body {
 	background: #444;
 	margin:0px;
 	padding:0px;
-	font-family: "Sans";
+	font-family: "Arial";
 	font-size: 1.6rem;
 	color: #ddd;
 }
@@ -126,10 +126,11 @@ label.lradio{
 }
 
 #preview{
+	min-width: 200px;
 	float: right;
 	margin: 10px;
 	width: 100px;
-	font-size: 10px;
+	font-size: 12px;
     cursor:default;
 	background-color: #064;
 	color:#fff;

@@ -3,13 +3,11 @@ var summary;
 var currentType;
 
 function dbInit() {//{{{
-	leaves = TAFFY(setup['leaves']);
+	leaves = TAFFY();
 	summary = TAFFY(setup['summary']);
-	leaves.insert({"lday":"2018-01-05", "ltype":"zal"});
-	leaves.insert({"lday":"2018-01-06", "ltype":"zal"});
-	leaves.insert({"lday":"2018-02-06", "ltype":"wyp"});
-	leaves.insert({"lday":"2018-02-07", "ltype":"wyp"});
-	leaves.insert({"lday":"2018-02-08", "ltype":"wyp"});
+	for(var i in setup.leaves) { 
+		leaves.insert({"lday":setup.leaves[i][0], "ltype":setup.leaves[i][1]});
+	}
 }
 //}}}
 function setCurrentType(e) {//{{{
@@ -64,7 +62,16 @@ $(function() {//{{{
 	});
 
 	$("#leavensky_submit").click(function(){
-		$("#collect").val(JSON.stringify(leaves().select("lday", "ltype")));
+		var collect={};
+		collect['leaves']=leaves().select("lday", "ltype");
+		collect['taken']={};
+
+		var c;
+		for(var k in setup['titles']) { 
+			c=leaves({ltype:k}).select("lday");
+			collect['taken'][k]=c.length; 
+		}
+		$("#collect").val(JSON.stringify(collect));
 
 	});
 	updatePreview();
@@ -79,7 +86,7 @@ function displayCalendar() {//{{{
 		inline: true,
 		date: leaves().select("lday"),
 		starts: 1,
-		calendars: 12 ,
+		calendars: 4 ,
 		onChange: function(data){
 			updateDB(data);
 			updatePreview();
