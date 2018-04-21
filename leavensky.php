@@ -26,13 +26,12 @@ function setup() {/*{{{*/
 		$_SESSION['setup']['titles'][$t[0]]=$t[1];
 	}
 
-	$r=$_SESSION['ll']->query("SELECT taken,limits FROM summary WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]; 
+	$r=$_SESSION['ll']->query("SELECT taken,limits,leaves FROM leavensky WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]; 
 	$taken=json_decode($r['taken'],1);
 	$limits=json_decode($r['limits'],1);
+	$leaves=json_decode($r['leaves'],1);
 	$_SESSION['setup']["summary"]=array('taken'=>$taken, 'limits'=>$limits); 
-
-	$r=$_SESSION['ll']->query("SELECT leaves FROM leavensky WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]; 
-	$_SESSION['setup']["leaves"]=json_decode($r['leaves'], 1);
+	$_SESSION['setup']["leaves"]=$leaves;
 
 	echo "
 	<script type='text/javascript'>
@@ -68,9 +67,7 @@ function form() { /*{{{*/
 function submit() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
 	$collect=json_decode($_REQUEST['collect'],1);
-	
-	$_SESSION['ll']->query("UPDATE leavensky SET leaves=$1, creator_id=$2 WHERE year=$3 AND user_id=$4", array(json_encode($collect['leaves']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
-	$_SESSION['ll']->query("UPDATE summary SET taken=$1, creator_id=$2 WHERE year=$3 AND user_id=$4", array(json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
+	$_SESSION['ll']->query("UPDATE leavensky SET leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
 }
 /*}}}*/
 

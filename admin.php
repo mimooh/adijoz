@@ -26,10 +26,16 @@ function form() { /*{{{*/
 	<table> 
 	<tr><th>Name<th colspan=2>".join("<th colspan=2>",$titles);
 
-	foreach($_SESSION['ll']->query("SELECT id,taken,limits FROM summary WHERE year=$1", array($_SESSION['year'])) as $r) { 
+	foreach($_SESSION['ll']->query("SELECT * FROM v WHERE year=$1 OR year IS NULL", array($_SESSION['year'])) as $r) { 
+		$zeroes=array();
+		foreach(array_keys($titles) as $k) { 
+			$zeroes[$k]=0;
+		}
 		$limits=json_decode($r['limits'],1);
 		$taken=json_decode($r['taken'],1);
-		echo "<tr><td>$r[id]";
+		if(empty($limits)) { $limits=$zeroes; }
+		if(empty($taken))  { $taken=$zeroes; }
+		echo "<tr><td>$r[name]($r[id])";
 		$bg="";
 		foreach($limits as $k=>$i) { 
 			if($taken[$k] > $limits[$k]) { $bg="style='background-color: #a00'"; }
@@ -52,7 +58,8 @@ function form() { /*{{{*/
 function submit() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
 	foreach($_REQUEST['collect'] as $k=>$v) {
-		$_SESSION['ll']->query("UPDATE summary SET limits=$1, creator_id=$2 WHERE year=$3 AND user_id=$4", array(json_encode($v), $_SESSION['creator_id'], $_SESSION['year'],$k));
+		$_SESSION['ll']->query("UPDATE leavensky SET limits=$1, creator_id=$2 WHERE user_id=$4", array(json_encode($v), $_SESSION['creator_id'], $k));
+		#$_SESSION['ll']->query("INSERT INTO leavensky (limits,creator_id,user_id) VALUES($1,$2,$3) WHERE NOT EXISTS (SELECT 1 FROM)", array(json_encode($v), $_SESSION['creator_id'], $k));
 	}
 }
 /*}}}*/
