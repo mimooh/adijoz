@@ -23,6 +23,9 @@ function form() { /*{{{*/
 
 	echo "
 	<form method=post> 
+	<br><br>Configuration for 
+	<input type=year name=year size=4 value=".$_SESSION['year'].">.
+	Once the users started to fill the data for the year that you set now, you cannot not modify the table below (DELETE/INSERT in db).<br><br> 
 	<table> 
 	<tr><th>Name<th colspan=2>".join("<th colspan=2>",$titles);
 
@@ -57,15 +60,16 @@ function form() { /*{{{*/
 /*}}}*/
 function submit() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
+	$_SESSION['year']=$_REQUEST['year'];
+	$_SESSION['ll']->query("DELETE FROM leavensky WHERE year=$1", array($_SESSION['year']));
 	foreach($_REQUEST['collect'] as $k=>$v) {
-		$_SESSION['ll']->query("UPDATE leavensky SET limits=$1, creator_id=$2 WHERE user_id=$4", array(json_encode($v), $_SESSION['creator_id'], $k));
-		#$_SESSION['ll']->query("INSERT INTO leavensky (limits,creator_id,user_id) VALUES($1,$2,$3) WHERE NOT EXISTS (SELECT 1 FROM)", array(json_encode($v), $_SESSION['creator_id'], $k));
+		$_SESSION['ll']->query("INSERT INTO leavensky (limits,creator_id,user_id,year) VALUES($1,$2,$3,$4)", array(json_encode($v), $_SESSION['creator_id'], $k, $_SESSION['year']));
 	}
 }
 /*}}}*/
 
 $_SESSION['creator_id']=666;
-$_SESSION['year']=2018;
+$_SESSION['year']=date('Y');
 head();
 submit();
 form();

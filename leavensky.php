@@ -50,6 +50,10 @@ function form() { /*{{{*/
 	}
 
 	echo "
+	<div style='padding:10px; float:right'>
+	".$_SESSION['user']."
+	</div>
+
 	<form method=post> 
 	<input type=hidden name=collect id=collect>
 	<table style='width:1px'> <tr> <th>$i18n_choose<th> $titles </table>
@@ -70,13 +74,18 @@ function submit() { /*{{{*/
 	$_SESSION['ll']->query("UPDATE leavensky SET leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
 }
 /*}}}*/
-
-if(isset($_GET['id'])) { 
-	$_SESSION['user_id']=$_GET['id'];
+function user() {/*{{{*/
+	if(isset($_GET['id'])) { 
+		$_SESSION['user_id']=$_GET['id'];
+		$_SESSION['user']=$_SESSION['ll']->query("SELECT name FROM people WHERE id=$1", array($_GET['id']))[0]['name'];
+	}
+	$_SESSION['creator_id']=666;
+	$_SESSION['year']=2018;
 }
-$_SESSION['creator_id']=666;
-$_SESSION['year']=2018;
+/*}}}*/
+
 head();
+user();
 submit();
 setup();
 form();
