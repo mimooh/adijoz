@@ -1,12 +1,12 @@
 <?php
-session_name('leavensky');
+session_name(getenv("LEAVENSKY_SESSION_NAME"));
 require_once("inc.php");
 
 function head() { /*{{{*/
 	echo "
 <HTML><HEAD>
 <META http-equiv=Content-Type content='text/html; charset=utf-8' />
-<title>leavensky</title>
+<title>admin</title>
 </HEAD>
 <link rel='stylesheet' type='text/css' href='css/css.css'>
 ";
@@ -41,13 +41,13 @@ function form() { /*{{{*/
 		$taken=json_decode($r['taken'],1);
 		if(empty($limits)) { $limits=$zeroes; }
 		if(empty($taken))  { $taken=$zeroes; }
-		echo "<tr><td>$r[name]($r[id])";
+		echo "<tr><td>$r[name]($r[user_id])";
 		$bg="";
 		foreach($limits as $k=>$i) { 
 			if($taken[$k] > $limits[$k]) { $bg="style='background-color: #a00'"; }
 			if($taken[$k] < $limits[$k]) { $bg="style='background-color: #08a'"; }
 
-			echo "<td><input size=2 value=$i name=collect[$r[id]][$k]><td $bg>".$taken[$k];
+			echo "<td><input size=2 value=$i name=collect[$r[user_id]][$k]><td $bg>".$taken[$k];
 			$bg="";
 		}
 	}

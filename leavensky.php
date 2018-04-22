@@ -1,5 +1,5 @@
 <?php
-session_name('leavensky');
+session_name(getenv("LEAVENSKY_SESSION_NAME"));
 require_once("inc.php");
 
 function head() { /*{{{*/
@@ -26,7 +26,8 @@ function setup() {/*{{{*/
 		$_SESSION['setup']['titles'][$t[0]]=$t[1];
 	}
 
-	$r=$_SESSION['ll']->query("SELECT taken,limits,leaves FROM leavensky WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]; 
+	$r=$_SESSION['ll']->query("SELECT taken,limits,leaves FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]; 
+	$r=$_SESSION['ll']->querydd("SELECT taken,limits,leaves FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]; 
 	$taken=json_decode($r['taken'],1);
 	$limits=json_decode($r['limits'],1);
 	$leaves=json_decode($r['leaves'],1);
@@ -54,6 +55,12 @@ function form() { /*{{{*/
 	".$_SESSION['user']."
 	</div>
 
+	<form method=post>
+	<br><br>Year
+	<input type=text name=change_year size=4 value=".$_SESSION['year'].">
+	<input type=submit value='set'>
+	</form>
+
 	<form method=post> 
 	<input type=hidden name=collect id=collect>
 	<table style='width:1px'> <tr> <th>$i18n_choose<th> $titles </table>
@@ -80,11 +87,21 @@ function user() {/*{{{*/
 		$_SESSION['user']=$_SESSION['ll']->query("SELECT name FROM people WHERE id=$1", array($_GET['id']))[0]['name'];
 	}
 	$_SESSION['creator_id']=666;
-	$_SESSION['year']=2018;
+}
+/*}}}*/
+
+function setup_year() {/*{{{*/
+	if(isset($_REQUEST['change_year'])) { 
+		$_SESSION['year']=$_REQUEST['change_year'];
+	} 
+	if(empty($_SESSION['year'])) { 
+		$_SESSION['year']=date('Y');
+	}
 }
 /*}}}*/
 
 head();
+setup_year();
 user();
 submit();
 setup();
