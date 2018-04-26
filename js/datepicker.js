@@ -281,7 +281,6 @@
       fill = function(el) {
         var options = $(el).data('datepicker');
         var cal = $(el);
-		//options.current=new Date(new Date().getFullYear(), 0, 1);
         var currentCal = options.current.getMonth(), date, data, dow, month, cnt = 0, days, indic, indic2, html, tblCal;
         
         cal.find('td>table tbody').remove();
@@ -504,15 +503,8 @@
                 }
               }
             } else if (parentEl.parent().parent().is('thead')) {
-              // clicked either next/previous arrows
-              if(tblEl.eq(0).hasClass('datepickerViewDays')) {
-                options.current.addMonths(el.hasClass('datepickerGoPrev') ? -1 : 1);
-              } else if(tblEl.eq(0).hasClass('datepickerViewMonths')) {
-                options.current.addYears(el.hasClass('datepickerGoPrev') ? -1 : 1);
-              } else if(tblEl.eq(0).hasClass('datepickerViewYears')) {
-                options.current.addYears(el.hasClass('datepickerGoPrev') ? -12 : 12);
-              }
-              fillIt = true;
+				options.current.addYears(el.hasClass('datepickerGoPrev') ? -1 : 1);
+				fillIt = true;
             }
             
           } else if (parentEl.is('td') && !parentEl.hasClass('datepickerDisabled')) {

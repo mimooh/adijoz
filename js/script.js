@@ -85,6 +85,7 @@ function displayCalendar() {//{{{
 		mode: 'multiple',
 		inline: true,
 		date: leaves().select("lday"),
+		current: year+"-01",
 		starts: 1,
 		calendars: 4 ,
 		onChange: function(data){

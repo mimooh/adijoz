@@ -18,7 +18,47 @@ function head() { /*{{{*/
 ";
 }
 /*}}}*/
-function setup() {/*{{{*/
+function make_year() {/*{{{*/
+	if(isset($_REQUEST['change_year'])) { 
+		$_SESSION['year']=$_REQUEST['change_year'];
+	} 
+	if(empty($_SESSION['year'])) { 
+		$_SESSION['year']=date('Y');
+	}
+
+	echo "
+	<script type='text/javascript'>
+		var year=".$_SESSION['year'].";
+	</script>
+	";
+}
+/*}}}*/
+function make_user() {/*{{{*/
+	if(isset($_GET['id'])) { 
+		$_SESSION['user_id']=$_GET['id'];
+		$_SESSION['user']=$_SESSION['ll']->query("SELECT name FROM people WHERE id=$1", array($_SESSION['user_id']))[0]['name'];
+	}
+	$_SESSION['creator_id']=666;
+}
+/*}}}*/
+function make_leaves() { /*{{{*/
+	if(empty($_REQUEST['collect'])) { return; }
+	$collect=json_decode($_REQUEST['collect'],1);
+	$_SESSION['ll']->query("UPDATE leavensky SET leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
+}
+/*}}}*/
+function form_year() {/*{{{*/
+	echo "
+	<form method=post>
+	<br> ".$_SESSION['user'].", year
+	<input type=text name=change_year size=4 value=".$_SESSION['year'].">
+	<input type=submit value='set'>
+	</form>
+	";
+
+}
+/*}}}*/
+function db_read() {/*{{{*/
 	$_SESSION['setup']=[];
 	$_SESSION['setup']['titles']=[];
 	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
@@ -26,11 +66,11 @@ function setup() {/*{{{*/
 		$_SESSION['setup']['titles'][$t[0]]=$t[1];
 	}
 
-	$r=$_SESSION['ll']->query("SELECT taken,limits,leaves FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]; 
-	$r=$_SESSION['ll']->querydd("SELECT taken,limits,leaves FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]; 
-	$taken=json_decode($r['taken'],1);
-	$limits=json_decode($r['limits'],1);
-	$leaves=json_decode($r['leaves'],1);
+	$r=$_SESSION['ll']->query("SELECT taken,limits,leaves FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']));
+	if(empty($r)) { die("Admins haven't yet prepared data for year ".$_SESSION['year']); }
+	$taken=json_decode($r[0]['taken'],1);
+	$limits=json_decode($r[0]['limits'],1);
+	$leaves=json_decode($r[0]['leaves'],1);
 	$_SESSION['setup']["summary"]=array('taken'=>$taken, 'limits'=>$limits); 
 	$_SESSION['setup']["leaves"]=$leaves;
 
@@ -42,7 +82,7 @@ function setup() {/*{{{*/
 
 }
 /*}}}*/
-function form() { /*{{{*/
+function form_calendar() { /*{{{*/
 	extract($_SESSION['i18n']);
 
 	$titles='';
@@ -51,16 +91,6 @@ function form() { /*{{{*/
 	}
 
 	echo "
-	<div style='padding:10px; float:right'>
-	".$_SESSION['user']."
-	</div>
-
-	<form method=post>
-	<br><br>Year
-	<input type=text name=change_year size=4 value=".$_SESSION['year'].">
-	<input type=submit value='set'>
-	</form>
-
 	<form method=post> 
 	<input type=hidden name=collect id=collect>
 	<table style='width:1px'> <tr> <th>$i18n_choose<th> $titles </table>
@@ -75,36 +105,13 @@ function form() { /*{{{*/
 
 }
 /*}}}*/
-function submit() { /*{{{*/
-	if(empty($_REQUEST['collect'])) { return; }
-	$collect=json_decode($_REQUEST['collect'],1);
-	$_SESSION['ll']->query("UPDATE leavensky SET leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
-}
-/*}}}*/
-function user() {/*{{{*/
-	if(isset($_GET['id'])) { 
-		$_SESSION['user_id']=$_GET['id'];
-		$_SESSION['user']=$_SESSION['ll']->query("SELECT name FROM people WHERE id=$1", array($_GET['id']))[0]['name'];
-	}
-	$_SESSION['creator_id']=666;
-}
-/*}}}*/
-
-function setup_year() {/*{{{*/
-	if(isset($_REQUEST['change_year'])) { 
-		$_SESSION['year']=$_REQUEST['change_year'];
-	} 
-	if(empty($_SESSION['year'])) { 
-		$_SESSION['year']=date('Y');
-	}
-}
-/*}}}*/
 
 head();
-setup_year();
-user();
-submit();
-setup();
-form();
+make_year();
+make_user();
+make_leaves();
+form_year();
+db_read();
+form_calendar();
 
 ?>
