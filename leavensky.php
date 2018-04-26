@@ -96,12 +96,19 @@ function form_calendar() { /*{{{*/
 	foreach($_SESSION['setup']['titles'] as $k=>$v) { 
 		$titles.="<th><label class=lradio id='l$k' title='$v'>$v</label>";
 	}
+	if(isset($_SESSION['leavensky_admin'])) { 
+		$chooser='';
+	} else {
+		$chooser="
+		<table style='width:1px'> <tr> <th>$i18n_choose<th> $titles </table>
+		<input id=leavensky_submit type=submit value='OK'><br>
+		";
+	}
 
 	echo "
 	<form method=post> 
 	<input type=hidden name=collect id=collect>
-	<table style='width:1px'> <tr> <th>$i18n_choose<th> $titles </table>
-	<input id=leavensky_submit type=submit value='OK'><br>
+	$chooser
 	<div style='display:inline-block'>
 		<div id='multi-calendar' style='float:left'></div>
 		<div id=preview></div>
