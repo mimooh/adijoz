@@ -41,7 +41,7 @@ function form() { /*{{{*/
 		$taken=json_decode($r['taken'],1);
 		if(empty($limits)) { $limits=$zeroes; }
 		if(empty($taken))  { $taken=$zeroes; }
-		echo "<tr><td>$r[name]($r[user_id])";
+		echo "<tr><td><a class=rlink href='?details=$r[user_id]'>$r[name]($r[user_id])</a>";
 		$bg="";
 		foreach($limits as $k=>$i) { 
 			if($taken[$k] > $limits[$k]) { $bg="style='background-color: #a00'"; }
@@ -95,8 +95,29 @@ function setup_year() {/*{{{*/
 	}
 }
 /*}}}*/
+function details() {/*{{{*/
+	$r=$_SESSION['ll']->query("SELECT * FROM v WHERE user_id=$1 AND year=$2", array($_GET['details'], $_SESSION['year']))[0];
+	$leaves=json_decode($r['leaves']);
+	echo "<br><br>$r[name]<table style='width:0'>";
+	$i=1;
+	foreach($leaves as $d) { 
+		echo "<tr><td>$i<td>$d[0]<td>$d[1]";
+		$i++;
+	}
+	echo "</table>";
+
+	$taken=json_decode($r['taken']);
+	echo "<table style='width:0'><tr>";
+	foreach($taken as $k=>$v) { 
+		echo "<td>$k: $v";
+	}
+	echo "</table>";
+	
+}
+/*}}}*/
 $_SESSION['creator_id']=666;
 head();
+details();
 setup_year();
 assert_years_ok();
 submit();

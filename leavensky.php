@@ -41,9 +41,16 @@ function make_user() {/*{{{*/
 	$_SESSION['creator_id']=666;
 }
 /*}}}*/
+
 function make_leaves() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
 	$collect=json_decode($_REQUEST['collect'],1);
+
+	foreach ($collect['leaves'] as $key => $row) {
+		$date[$key] = $row[0];
+		$type[$key] = $row[1];
+	}
+	array_multisort($date, SORT_ASC,  $collect['leaves']);
 	$_SESSION['ll']->query("UPDATE leavensky SET leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
 }
 /*}}}*/
