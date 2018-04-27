@@ -41,7 +41,6 @@ function make_user() {/*{{{*/
 	$_SESSION['creator_id']=666;
 }
 /*}}}*/
-
 function make_leaves() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
 	$collect=json_decode($_REQUEST['collect'],1);
@@ -51,7 +50,7 @@ function make_leaves() { /*{{{*/
 		$type[$key] = $row[1];
 	}
 	array_multisort($date, SORT_ASC,  $collect['leaves']);
-	$_SESSION['ll']->query("UPDATE leavensky SET leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
+	$_SESSION['ll']->query("UPDATE leavensky SET block=1, leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
 }
 /*}}}*/
 function form_year() {/*{{{*/
@@ -66,6 +65,7 @@ function form_year() {/*{{{*/
 }
 /*}}}*/
 function db_read() {/*{{{*/
+	extract($_SESSION['i18n']);
 	$_SESSION['setup']=[];
 	$_SESSION['setup']['titles']=[];
 	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
@@ -74,7 +74,7 @@ function db_read() {/*{{{*/
 	}
 
 	$r=$_SESSION['ll']->query("SELECT taken,limits,leaves FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']));
-	if(empty($r)) { die("Admins haven't yet prepared data for year ".$_SESSION['year']); }
+	if(empty($r)) { die("$i18n_year_not_prepared ".$_SESSION['year']); }
 	$taken=json_decode($r[0]['taken'],1);
 	$limits=json_decode($r[0]['limits'],1);
 	$leaves=json_decode($r[0]['leaves'],1);
@@ -89,26 +89,41 @@ function db_read() {/*{{{*/
 
 }
 /*}}}*/
-function form_calendar() { /*{{{*/
+function calendar_submitter() {/*{{{*/
 	extract($_SESSION['i18n']);
 
 	$titles='';
 	foreach($_SESSION['setup']['titles'] as $k=>$v) { 
 		$titles.="<th><label class=lradio id='l$k' title='$v'>$v</label>";
 	}
-	if(isset($_SESSION['leavensky_admin'])) { 
-		$chooser='';
-	} else {
-		$chooser="
-		<table style='width:1px'> <tr> <th>$i18n_choose<th> $titles </table>
-		<input id=leavensky_submit type=submit value='OK'><br>
-		";
-	}
 
+	$block=$_SESSION['ll']->query("SELECT block FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]['block'];
+
+	$submitter='';
+	if(empty($_SESSION['leavensky_admin'])) { 
+		$submitter="<table style='width:1px'> <tr> <th>$i18n_choose<th> $titles </table>";
+		if($block==1) { 
+			$submitter.="<div style='display:inline-block'>";
+			$submitter.="&nbsp; Blocked";
+			$submitter.="<help title='".$i18n_howto_unblock."'></help>";
+			$submitter.="</div><br>";
+		} else {
+			$submitter.="<div style='display:inline-block'>";
+			$submitter.="<input id=leavensky_submit type=submit>";
+			$submitter.="<help title='".$i18n_howto_unblock."'></help>";
+			$submitter.="</div><br>";
+		}
+	}
+	return $submitter;
+
+}
+/*}}}*/
+function form_calendar() { /*{{{*/
+	$submitter=calendar_submitter();
 	echo "
 	<form method=post> 
 	<input type=hidden name=collect id=collect>
-	$chooser
+	$submitter
 	<div style='display:inline-block'>
 		<div id='multi-calendar' style='float:left'></div>
 		<div id=preview></div>

@@ -17,6 +17,13 @@ td {
 	color: #fff;
 	border:#555 1px solid;
 }
+.block_1 { 
+	background-color: #555;
+	color: #888;
+}
+.block_0 { 
+	background-color: #eee;
+}
 
 th {
 	padding: 6px;
@@ -137,6 +144,17 @@ label.lradio{
 	z-index: 2;
 	padding: 30px;
 }
+
+help:after{
+    content: "";
+    display: block;
+    background: url("qmark.svg") no-repeat;
+    width: 20px;
+    height: 20px;
+    float: right;
+    margin: 0 0px 0 6px;
+}
+
 
 
 /*}}}*/

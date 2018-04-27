@@ -1,2 +1,4 @@
 i18n_days_left				; Left
 i18n_choose					; Choose
+i18n_howto_unblock			; Once you have submitted the form it cannot be edited anymore. Administrator can unblock the form.
+i18n_year_not_prepared		; Administrator hasn't yet prepared data for year

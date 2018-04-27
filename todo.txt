@@ -1,1 +1,0 @@
-Admin should see the calendar after choosing details

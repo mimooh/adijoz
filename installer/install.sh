@@ -83,10 +83,11 @@ CREATE TABLE leavensky (
 	modified timestamp default current_timestamp,
 	taken text,
 	leaves text,
+	block text,
 	limits text
 );
 
-CREATE VIEW v as SELECT people.name, people.id as user_id, leavensky.year, leavensky.creator_id, leavensky.leaves,leavensky.limits, leavensky.taken FROM people LEFT JOIN leavensky ON (people.id=leavensky.user_id);
+CREATE VIEW v as SELECT people.name, people.id as user_id, leavensky.year, leavensky.creator_id, leavensky.leaves,leavensky.limits, leavensky.taken, leavensky.block FROM people LEFT JOIN leavensky ON (people.id=leavensky.user_id);
 
 CREATE TRIGGER update_modified BEFORE UPDATE ON leavensky FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 

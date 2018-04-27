@@ -30,7 +30,7 @@ function form() { /*{{{*/
 
 	<form method=post> 
 	<table> 
-	<tr><th>Name<th colspan=2>".join("<th colspan=2>",$titles);
+	<tr><th>block<th>name<th colspan=2>".join("<th colspan=2>",$titles);
 
 	foreach($_SESSION['ll']->query("SELECT * FROM v WHERE year=$1 ORDER BY name", array($_SESSION['year'])) as $r) { 
 		$zeroes=array();
@@ -39,15 +39,19 @@ function form() { /*{{{*/
 		}
 		$limits=json_decode($r['limits'],1);
 		$taken=json_decode($r['taken'],1);
-		if(empty($limits)) { $limits=$zeroes; }
-		if(empty($taken))  { $taken=$zeroes; }
-		echo "<tr><td><a class=rlink target=_ href='leavensky.php?id=$r[user_id]'>$r[name]($r[user_id])</a>";
+
+		if(empty($limits))     { $limits=$zeroes; }
+		if(empty($taken))      { $taken=$zeroes; }
+		if(empty($r['block'])) { $r['block']=0; }
+
+		echo "<tr><td><input autocomplete=off class=block_$r[block] type=text name=block[$r[user_id]] value='$r[block]' size=1>";
+		echo "<td><a class=rlink target=_ href='leavensky.php?id=$r[user_id]'>$r[name]($r[user_id])</a>";
 		$bg="";
 		foreach($limits as $k=>$i) { 
 			if($taken[$k] > $limits[$k]) { $bg="style='background-color: #a00'"; }
 			if($taken[$k] < $limits[$k]) { $bg="style='background-color: #08a'"; }
 
-			echo "<td><input size=2 value=$i name=collect[$r[user_id]][$k]><td $bg>".$taken[$k];
+			echo "<td><input autocomplete=off size=2 value=$i name=collect[$r[user_id]][$k]><td $bg>".$taken[$k];
 			$bg="";
 		}
 	}
@@ -64,7 +68,7 @@ function form() { /*{{{*/
 function submit() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
 	foreach($_REQUEST['collect'] as $k=>$v) {
-		$_SESSION['ll']->query("UPDATE leavensky SET limits=$1, creator_id=$2 WHERE user_id=$3 AND year=$4", array(json_encode($v), $_SESSION['creator_id'], $k, $_SESSION['year']));
+		$_SESSION['ll']->query("UPDATE leavensky SET block=$1, limits=$2, creator_id=$3 WHERE user_id=$4 AND year=$5", array($_REQUEST['block'][$k], json_encode($v), $_SESSION['creator_id'], $k, $_SESSION['year']));
 		#$_SESSION['ll']->querydd("UPDATE leavensky SET limits=$1, creator_id=$2 WHERE user_id=$3 AND year=$4", array(json_encode($v), $_SESSION['creator_id'], $k, $_SESSION['year']));
 	}
 }
