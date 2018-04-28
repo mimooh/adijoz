@@ -1,5 +1,7 @@
 i18n_days_left				; Pozostało
 i18n_choose					; Wybierz
-i18n_howto_unblock			; Po wysłaniu formularz zostanie zablokowany. Administrator może przywrócić edycję formularza.
-i18n_year_not_prepared		; Administrator nie przygotował jeszcze danych na rok
+i18n_howto_unblock			; Administrator stwierdził, że Twój urlop został zaplanowany. Administrator może przywrócić edycję formularza.
+i18n_year_not_prepared		; Administrator nie przygotował danych na rok
 i18n_howto_disabled_days	; Możesz wybrać dni (święta), których użytkownik nie będzie mógł oznaczyć jako urlop.
+i18n_admin_submit_year		; Wybierz rok, ustaw limity w powyższej tabeli, wybierz OK i przekaż pracownikom, że mogą rozpocząc planowanie urlopów.
+i18n_meaning_of_block		; Administrator może zablokować użytkownikowi dalsze edycje w aktywnym roku. 0=edytowalne, 1=zablokowane.

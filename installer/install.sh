@@ -23,6 +23,7 @@ sudo cat /etc/apache2/envvars | grep -v LEAVENSKY_  > $temp
 echo "export LEAVENSKY_DB_USER='$LEAVENSKY_DB_USER'" >> $temp
 echo "export LEAVENSKY_DB_PASS='$LEAVENSKY_DB_PASS'" >> $temp
 echo "export LEAVENSKY_SESSION_NAME='$LEAVENSKY_SESSION_NAME'" >> $temp
+echo "export LEAVENSKY_LANG='$LEAVENSKY_LANG'" >> $temp
 sudo cp $temp /etc/apache2/envvars
 rm $temp
 

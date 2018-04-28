@@ -36,7 +36,7 @@ function form_limits() { /*{{{*/
 
 	<form method=post> 
 	<table> 
-	<tr><th>block<th>name<th colspan=2>".join("<th colspan=2>",$titles);
+	<tr><th>block <help title='".$i18n_meaning_of_block."'></help> <th>name<th colspan=2>".join("<th colspan=2>",$titles);
 
 	foreach($_SESSION['ll']->query("SELECT * FROM v WHERE year=$1 ORDER BY name", array($_SESSION['year'])) as $r) { 
 		$zeroes=array();
@@ -64,7 +64,12 @@ function form_limits() { /*{{{*/
 
 	echo "
 	</table>
-	<input type=submit value='OK'><br>
+
+	<div style='display:inline-block'>
+		<input type=submit value='OK'>
+		<help title='".$i18n_admin_submit_year."'></help>
+		<br>
+	</div>
 	<br><br>
 	</form>
 	";
@@ -184,6 +189,10 @@ function db_read() {/*{{{*/
 	$leaves=json_decode($r[0]['leaves'],1);
 	$_SESSION['setup']["summary"]=array('taken'=>$taken, 'limits'=>$limits); 
 	$_SESSION['setup']["leaves"]=$leaves;
+	$_SESSION['setup']["user"]="admin";
+	if(empty($leaves)) { 
+		$leaves=[];
+	}
 	foreach($leaves as $v) {
 		$_SESSION['setup']['disabled'][]=$v[0];
 	}

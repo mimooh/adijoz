@@ -1,18 +1,12 @@
 var leaves;
 var summary;
-var disabled;
 var currentType;
 
 function dbInit() {//{{{
 	summary  = TAFFY(setup['summary']);
 	leaves   = TAFFY();
-	disabled = TAFFY();
 	for(var i in setup.leaves) { 
 		leaves.insert({"lday":setup.leaves[i][0], "ltype":setup.leaves[i][1]});
-	}
-
-	for(var i in setup.disabled) { 
-		disabled.insert({"disabled":setup.disabled[i]});
 	}
 }
 //}}}
@@ -82,7 +76,11 @@ $(function() {//{{{
 
 	});
 	updatePreview();
-	displayCalendar();
+	if(setup.user == "admin") {
+		displayCalendarAdmin();
+	} else {
+		displayCalendarUser();
+	}
 
 	if(preview==1) { 
 		$('#preview').slideDown();
@@ -90,8 +88,30 @@ $(function() {//{{{
 
 });
 //}}}
-function displayCalendar() {//{{{
-	// console.log(disabled().select("disabled"));
+function displayCalendarUser() {//{{{
+	// Calendar for the user
+	$('#multi-calendar').DatePicker({
+		mode: 'multiple',
+		inline: true,
+		current: year+"-01",
+		date: leaves().select("lday"),
+		starts: 1,
+		calendars: 4 ,
+		onRenderCell: function(el,date) {
+			if(setup.disabled.includes(moment(new Date(date)).format("YYYY-MM-DD"))) { 
+				return {'disabled': 1};
+			}
+			return {'disabled': 0};
+		},
+		onChange: function(data){
+			updateDB(data);
+			updatePreview();
+		}
+	});
+}
+//}}}
+function displayCalendarAdmin() {//{{{
+	// Calendar for the admin. Admin configures which days users should have disabled.
 	$('#multi-calendar').DatePicker({
 		mode: 'multiple',
 		inline: true,
@@ -99,11 +119,6 @@ function displayCalendar() {//{{{
 		current: year+"-01",
 		starts: 1,
 		calendars: 4 ,
-		onRenderCell: function(el,date) {
-			//var z=moment(new Date(date)).format("YYYY-MM-DD");
-			console.log("dis", disabled({disabled:"2018-01-02"}).first());
-			return {'disabled': 1};
-		},
 		onChange: function(data){
 			updateDB(data);
 			updatePreview();

@@ -50,7 +50,8 @@ function submit_calendar() { /*{{{*/
 		$type[$key] = $row[1];
 	}
 	array_multisort($date, SORT_ASC,  $collect['leaves']);
-	$_SESSION['ll']->query("UPDATE leavensky SET block=1, leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
+	$_SESSION['ll']->query("UPDATE leavensky SET leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
+	unset($_REQUEST);
 }
 /*}}}*/
 function form_year() {/*{{{*/
@@ -62,6 +63,22 @@ function form_year() {/*{{{*/
 	</form>
 	";
 
+}
+/*}}}*/
+function db_read_disabled() {/*{{{*/
+	// user_id == -1  is admin. Whatever he chooses as leaves will be disabled
+	// for normal users too select. Good for Saturdays/Sundays/religious
+	// holidays, etc.
+
+	$disabled=[];
+	$r=$_SESSION['ll']->query("SELECT leaves FROM leavensky WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
+	if(!empty($r)) { 
+		$leaves=json_decode($r[0]['leaves'],1);
+		foreach($leaves as $v) {
+			$disabled[]=$v[0];
+		}
+	}
+	return $disabled;
 }
 /*}}}*/
 function db_read() {/*{{{*/
@@ -80,6 +97,9 @@ function db_read() {/*{{{*/
 	$leaves=json_decode($r[0]['leaves'],1);
 	$_SESSION['setup']["summary"]=array('taken'=>$taken, 'limits'=>$limits); 
 	$_SESSION['setup']["leaves"]=$leaves;
+	$_SESSION['setup']['disabled']=db_read_disabled();
+	$_SESSION['setup']['user']='user';
+
 
 	echo "
 	<script type='text/javascript'>
@@ -111,7 +131,6 @@ function calendar_submitter() {/*{{{*/
 		} else {
 			$submitter.="<div style='display:inline-block'>";
 			$submitter.="<input id=leavensky_submit type=submit>";
-			$submitter.="<help title='".$i18n_howto_unblock."'></help>";
 			$submitter.="</div><br>";
 		}
 	}
