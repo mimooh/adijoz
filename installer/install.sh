@@ -2,10 +2,13 @@
 
 LEAVENSKY_DB_USER='leavensky'  
 LEAVENSKY_DB_PASS='secret'  
-LEAVENSKY_SESSION_NAME='sgsp'
-LEAVENSKY_LANG="pl"	
+LEAVENSKY_SESSION_NAME='leavensky'
+LEAVENSKY_LANG="en"	
 
 # End of configuration. Run this shell script to setup postgres for leavensky project. Then restart apache.
+# If you are on a hosting server with users that cannot be trust and/or if you cannot write to /etc/apache2/envvars
+# then you need to find your way to propagate these variables for www-data user. Or just make them constants in
+# leavensky code.
 
 # init 
 USER=`id -ru`
@@ -108,4 +111,6 @@ echo;
 echo;
 echo "Restarting apache..."
 sudo service apache2 restart
+echo;
+echo "One last thing is to setup your leave types in ../conf.json";
 #}}}

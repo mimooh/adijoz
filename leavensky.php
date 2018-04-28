@@ -67,7 +67,7 @@ function form_year() {/*{{{*/
 /*}}}*/
 function db_read_disabled() {/*{{{*/
 	// user_id == -1  is admin. Whatever he chooses as leaves will be disabled
-	// for normal users too select. Good for Saturdays/Sundays/religious
+	// for normal users to select. Good for Saturdays/Sundays/religious
 	// holidays, etc.
 
 	$disabled=[];
