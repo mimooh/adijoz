@@ -5,3 +5,4 @@ i18n_year_not_prepared		; Administrator hasn't prepared data for year
 i18n_howto_disabled_days	; You can setup days (holidays) that will be not selectable by the users.
 i18n_admin_submit_year		; Select year, set limits in the table above, submit with OK and inform the users that they can start planning their time-offs.
 i18n_meaning_of_block		; Administrator can block the user from further editions in the active year. 0=editable, 1=blocked.
+i18n_disabled_from_planning ; Days disabled from planning

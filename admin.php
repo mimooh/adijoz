@@ -29,7 +29,7 @@ function form_limits() { /*{{{*/
 
 	echo "
 	<form method=post>
-	<br><br>Year
+	<br><br>&nbsp;Year
 	<input type=text name=change_year size=4 value=".$_SESSION['year'].">
 	<input type=submit name='submit_year' value='set'>
 	</form>
@@ -156,7 +156,8 @@ function calendar_submitter() { /*{{{*/
 function form_calendar() { /*{{{*/
 	$submitter=calendar_submitter();
 	echo "
-	<hr>
+	<br><br>&nbsp;
+	".$_SESSION['i18n']['i18n_disabled_from_planning']."
 	<form method=post> 
 	<input type=hidden name=collect id=collect>
 	<div style='display:inline-block'>
