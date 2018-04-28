@@ -9,10 +9,16 @@ function head() { /*{{{*/
 <title>admin</title>
 </HEAD>
 <link rel='stylesheet' type='text/css' href='css/css.css'>
+<link rel='stylesheet' type='text/css' href='css/datepicker.css' />
+<script type='text/javascript' src='js/jquery.js'></script>
+<script type='text/javascript' src='js/taffy-min.js'></script>
+<script type='text/javascript' src='js/moment.min.js'></script>
+<script type='text/javascript' src='js/datepicker.js'></script>
+<script type='text/javascript' src='js/script.js'></script>
 ";
 }
 /*}}}*/
-function form() { /*{{{*/
+function form_limits() { /*{{{*/
 	extract($_SESSION['i18n']);
 
 	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
@@ -51,7 +57,7 @@ function form() { /*{{{*/
 			if($taken[$k] > $limits[$k]) { $bg="style='background-color: #a00'"; }
 			if($taken[$k] < $limits[$k]) { $bg="style='background-color: #08a'"; }
 
-			echo "<td><input autocomplete=off size=2 value=$i name=collect[$r[user_id]][$k]><td $bg>".$taken[$k];
+			echo "<td><input autocomplete=off size=2 value=$i name=collect_limits[$r[user_id]][$k]><td $bg>".$taken[$k];
 			$bg="";
 		}
 	}
@@ -65,11 +71,22 @@ function form() { /*{{{*/
 
 }
 /*}}}*/
-function submit() { /*{{{*/
+function submit_calendar() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
-	foreach($_REQUEST['collect'] as $k=>$v) {
+	$collect=json_decode($_REQUEST['collect'],1);
+
+	foreach($collect['leaves'] as $key => $row) {
+		$date[$key] = $row[0];
+		$type[$key] = $row[1];
+	}
+	array_multisort($date, SORT_ASC,  $collect['leaves']);
+	$_SESSION['ll']->query("UPDATE leavensky SET block=1, leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=-1", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year']));
+}
+/*}}}*/
+function submit_limits() { /*{{{*/
+	if(empty($_REQUEST['collect_limits'])) { return; }
+	foreach($_REQUEST['collect_limits'] as $k=>$v) {
 		$_SESSION['ll']->query("UPDATE leavensky SET block=$1, limits=$2, creator_id=$3 WHERE user_id=$4 AND year=$5", array($_REQUEST['block'][$k], json_encode($v), $_SESSION['creator_id'], $k, $_SESSION['year']));
-		#$_SESSION['ll']->querydd("UPDATE leavensky SET limits=$1, creator_id=$2 WHERE user_id=$3 AND year=$4", array(json_encode($v), $_SESSION['creator_id'], $k, $_SESSION['year']));
 	}
 }
 /*}}}*/
@@ -90,6 +107,20 @@ function assert_years_ok() {/*{{{*/
 
 }
 /*}}}*/
+function init_year() {/*{{{*/
+	#$_SESSION['ll']->query("DELETE FROM leavensky WHERE user_id=-1");
+	$r=$_SESSION['ll']->query("SELECT * FROM leavensky WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
+	if(!empty($r)) { return; }
+
+	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
+	foreach($conf as $t) {
+		$taken[$t[0]]=0;
+	}
+
+	$_SESSION['ll']->query("INSERT INTO leavensky(user_id,year,taken,limits) VALUES(-1,$1,$2,$2)", array($_SESSION['year'], json_encode($taken)));
+	
+}
+/*}}}*/
 function setup_year() {/*{{{*/
 	if(isset($_REQUEST['submit_year'])) { 
 		$_SESSION['year']=$_REQUEST['change_year'];
@@ -97,15 +128,86 @@ function setup_year() {/*{{{*/
 	if(empty($_SESSION['year'])) { 
 		$_SESSION['year']=date('Y');
 	}
+
+	echo "
+	<script type='text/javascript'>
+		var year=".$_SESSION['year'].";
+	</script>
+	";
+	init_year();
+}
+/*}}}*/
+function calendar_submitter() { /*{{{*/
+	extract($_SESSION['i18n']);
+	$submitter='';
+	$submitter.="<div style='display:inline-block'>";
+	$submitter.="<input id=leavensky_submit type=submit>";
+	$submitter.="<help title='".$i18n_howto_disabled_days."'></help>";
+
+	$submitter.="</div><br>";
+	return $submitter;
+}
+/*}}}*/
+function form_calendar() { /*{{{*/
+	$submitter=calendar_submitter();
+	echo "
+	<hr>
+	<form method=post> 
+	<input type=hidden name=collect id=collect>
+	<div style='display:inline-block'>
+		<div id='multi-calendar' style='float:left'></div>
+	</div>
+	<br><br>
+	$submitter
+	</form>
+	";
+
+}
+/*}}}*/
+function db() {/*{{{*/
+	dd($_SESSION['ll']->query("SELECT * FROM leavensky WHERE year=$1", array($_SESSION['year'])));
+}
+/*}}}*/
+function db_read() {/*{{{*/
+	extract($_SESSION['i18n']);
+	$_SESSION['setup']=[];
+	$_SESSION['setup']['titles']=[];
+	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
+	foreach($conf as $t) {
+		$_SESSION['setup']['titles'][$t[0]]=$t[1];
+	}
+
+	$r=$_SESSION['ll']->query("SELECT taken,limits,leaves FROM leavensky WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
+	if(empty($r)) { die("$i18n_year_not_prepared ".$_SESSION['year']); }
+	$taken=json_decode($r[0]['taken'],1);
+	$limits=json_decode($r[0]['limits'],1);
+	$leaves=json_decode($r[0]['leaves'],1);
+	$_SESSION['setup']["summary"]=array('taken'=>$taken, 'limits'=>$limits); 
+	$_SESSION['setup']["leaves"]=$leaves;
+	foreach($leaves as $v) {
+		$_SESSION['setup']['disabled'][]=$v[0];
+	}
+
+	echo "
+	<script type='text/javascript'>
+		var setup=".json_encode($_SESSION['setup']).";
+		var preview=0;
+	</script>
+	";
+
 }
 /*}}}*/
 
 $_SESSION['creator_id']=666;
 $_SESSION['leavensky_admin']=1;
+#db();
 head();
 setup_year();
 assert_years_ok();
-submit();
-form();
+submit_limits();
+submit_calendar();
+db_read();
+form_limits();
+form_calendar();
 
 ?>

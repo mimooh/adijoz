@@ -143,6 +143,7 @@ label.lradio{
 	color:#fff;
 	z-index: 2;
 	padding: 30px;
+	display: none;
 }
 
 help:after{

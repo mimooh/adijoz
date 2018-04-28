@@ -1,12 +1,18 @@
 var leaves;
 var summary;
+var disabled;
 var currentType;
 
 function dbInit() {//{{{
-	leaves = TAFFY();
-	summary = TAFFY(setup['summary']);
+	summary  = TAFFY(setup['summary']);
+	leaves   = TAFFY();
+	disabled = TAFFY();
 	for(var i in setup.leaves) { 
 		leaves.insert({"lday":setup.leaves[i][0], "ltype":setup.leaves[i][1]});
+	}
+
+	for(var i in setup.disabled) { 
+		disabled.insert({"disabled":setup.disabled[i]});
 	}
 }
 //}}}
@@ -34,6 +40,7 @@ function updateDB(data) {//{{{
 
 //}}}
 function updatePreview() {//{{{
+	if(preview==0) { return; }
 	$("#preview").html("");
 	$("#preview").css("background-color", "#064");
 	var c;
@@ -76,11 +83,15 @@ $(function() {//{{{
 	});
 	updatePreview();
 	displayCalendar();
-	$('#preview').slideDown();
+
+	if(preview==1) { 
+		$('#preview').slideDown();
+	}
 
 });
 //}}}
 function displayCalendar() {//{{{
+	// console.log(disabled().select("disabled"));
 	$('#multi-calendar').DatePicker({
 		mode: 'multiple',
 		inline: true,
@@ -88,6 +99,11 @@ function displayCalendar() {//{{{
 		current: year+"-01",
 		starts: 1,
 		calendars: 4 ,
+		onRenderCell: function(el,date) {
+			//var z=moment(new Date(date)).format("YYYY-MM-DD");
+			console.log("dis", disabled({disabled:"2018-01-02"}).first());
+			return {'disabled': 1};
+		},
 		onChange: function(data){
 			updateDB(data);
 			updatePreview();

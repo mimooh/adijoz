@@ -41,11 +41,11 @@ function make_user() {/*{{{*/
 	$_SESSION['creator_id']=666;
 }
 /*}}}*/
-function make_leaves() { /*{{{*/
+function submit_calendar() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
 	$collect=json_decode($_REQUEST['collect'],1);
 
-	foreach ($collect['leaves'] as $key => $row) {
+	foreach($collect['leaves'] as $key => $row) {
 		$date[$key] = $row[0];
 		$type[$key] = $row[1];
 	}
@@ -84,6 +84,7 @@ function db_read() {/*{{{*/
 	echo "
 	<script type='text/javascript'>
 		var setup=".json_encode($_SESSION['setup']).";
+		var preview=1;
 	</script>
 	";
 
@@ -138,7 +139,7 @@ function form_calendar() { /*{{{*/
 head();
 make_year();
 make_user();
-make_leaves();
+submit_calendar();
 form_year();
 db_read();
 form_calendar();

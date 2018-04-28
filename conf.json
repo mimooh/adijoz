@@ -2,8 +2,6 @@
 "comment1": "You can choose/create languages under messages/ directory.",
 "comment2": "Schema for leave_titles: ['shorname', 'fullname' ]",
 
-"lang": "en",
-
 "leave_titles": 
 [
 	[ "zal"  , "zaległy" ]              ,

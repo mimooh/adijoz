@@ -3,6 +3,7 @@
 LEAVENSKY_DB_USER='leavensky'  
 LEAVENSKY_DB_PASS='secret'  
 LEAVENSKY_SESSION_NAME='sgsp'
+LEAVENSKY_LANG="pl"	
 
 # End of configuration. Run this shell script to setup postgres for leavensky project. Then restart apache.
 
