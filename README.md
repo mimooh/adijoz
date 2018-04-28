@@ -6,8 +6,10 @@ for each employee. Each employee can pick their leave days by clicking in a
 calendar. 
 
 ![User intefrace](img/user.png)
+
 User interface
 
 ![Admin intefrace](img/admin.png)
+
 Admin interface
 
