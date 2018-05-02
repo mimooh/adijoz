@@ -51,7 +51,7 @@ function form_limits() { /*{{{*/
 		if(empty($r['block'])) { $r['block']=0; }
 
 		echo "<tr><td><input autocomplete=off class=block_$r[block] type=text name=block[$r[user_id]] value='$r[block]' size=1>";
-		echo "<td><a class=rlink target=_ href='adijoz.php?id=$r[user_id]'>$r[name]($r[user_id])</a>";
+		echo "<td><span style='white-space:nowrap'><a class=rlink target=_ href='adijoz.php?id=$r[user_id]'>$r[name]($r[user_id])</a></span>";
 		$bg="";
 		foreach($limits as $k=>$i) { 
 			if($taken[$k] > $limits[$k]) { $bg="style='background-color: #a00'"; }
