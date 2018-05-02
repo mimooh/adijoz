@@ -205,6 +205,7 @@ function db_read() {/*{{{*/
 head();
 
 if(getenv("ADIJOZ_DISABLE_AUTH")==1) { 
+	$_SESSION['home_url']=$_SERVER['SCRIPT_NAME'];
 	$_SESSION['user_id']=-1; 
 	$_SESSION['user']='Admin';
 	$_SESSION['adijoz_admin']=1;

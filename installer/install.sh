@@ -6,7 +6,6 @@ ADIJOZ_DB_USER='adijoz'
 ADIJOZ_DB_PASS='secret'  
 ADIJOZ_SESSION_NAME='adijoz'
 ADIJOZ_LANG="en"	
-ADIJOZ_LOGOUT_URL="/"	
 
 # Your email for DB failure notificatins, etc.
 ADIJOZ_NOTIFY="user@gmail.com"  
@@ -44,7 +43,6 @@ echo "export ADIJOZ_DB_USER='$ADIJOZ_DB_USER'" >> $temp
 echo "export ADIJOZ_DB_PASS='$ADIJOZ_DB_PASS'" >> $temp
 echo "export ADIJOZ_SESSION_NAME='$ADIJOZ_SESSION_NAME'" >> $temp
 echo "export ADIJOZ_LANG='$ADIJOZ_LANG'" >> $temp
-echo "export ADIJOZ_LOGOUT_URL='$ADIJOZ_LOGOUT_URL'" >> $temp
 echo "export ADIJOZ_NOTIFY='$ADIJOZ_NOTIFY'" >> $temp
 echo "export ADIJOZ_DISABLE_AUTH='$ADIJOZ_DISABLE_AUTH'" >> $temp
 

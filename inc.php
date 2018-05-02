@@ -61,8 +61,9 @@ class adijoz{/*{{{*/
 		if(!isset($_GET['logout'])) { 
 			echo "<div style='float:right'><a href=?logout class=rlink>Logout: $_SESSION[user]</a></div>"; 
 		} else {
-			session_destroy();
-			header("Location: ".getenv("ADIJOZ_LOGOUT_URL"));
+			$home=$_SESSION['home_url'];
+			$_SESSION=array();
+			header("Location: $home");
 		}
 	}
 /*}}}*/

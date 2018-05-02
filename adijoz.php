@@ -158,6 +158,7 @@ function admin_change_user() {/*{{{*/
 head();
 
 if(getenv("ADIJOZ_DISABLE_AUTH")==1) { 
+	$_SESSION['home_url']=$_SERVER['SCRIPT_NAME'];
 	$_SESSION['user_id']=1; 
 	$_SESSION['user']='Lannister Jaimie';
 	echo "<a class=blink href=admin.php>admin.php</a>";
