@@ -3,7 +3,7 @@ session_start();
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
-$_SESSION['ll']=new leavensky();
+$_SESSION['ll']=new adijoz();
 
 # debug/*{{{*/
 
@@ -25,11 +25,11 @@ function dd2($arr) {
 }
 
 /*}}}*/
-class leavensky{/*{{{*/
+class adijoz{/*{{{*/
 	// On init we load all messages from messages/en.csv. This way we don't have missing texts in case translations are not complete.
 	// Then messages/$language.csv is loaded to replace some/all en strings.
 	public function __construct(){
-		$language=getenv("LEAVENSKY_LANG");
+		$language=getenv("ADIJOZ_LANG");
 		$_SESSION['i18n']=array();
 
 		foreach (file("messages/en.csv") as $row) {                                                                                   
@@ -52,7 +52,7 @@ class leavensky{/*{{{*/
 /*}}}*/
 	private function reportbug($arr) {/*{{{*/
 		$reportquery=join("\n" , array('--------' , date("G:i:s"), $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT'], $_SERVER['REQUEST_URI'], $arr[0] , $arr[1] , $arr[2] , "\n\n"));
-		mail('mimoohowy@gmail.com', 'Leavensky bug!', "$reportquery", "from: mimooh@inf.sgsp.edu.pl"); 
+		mail('mimoohowy@gmail.com', 'Adijoz bug!', "$reportquery", "from: mimooh@inf.sgsp.edu.pl"); 
 		echo "<fatal>".$arr[0]."</fatal>"; 
 		die();
 }
@@ -88,7 +88,7 @@ class leavensky{/*{{{*/
         extract($_SESSION);
 		$caller=debug_backtrace()[1]['function'];
 
-		$connect=pg_connect("dbname=leavensky host=localhost user=".getenv("LEAVENSKY_DB_USER")." password=".getenv("LEAVENSKY_DB_PASS"));
+		$connect=pg_connect("dbname=adijoz host=localhost user=".getenv("ADIJOZ_DB_USER")." password=".getenv("ADIJOZ_DB_PASS"));
 		($result=pg_query_params($connect, $qq, $arr)) || $this->reportBug(array("db error\n\ncaller: $caller()\n\n", "$qq", pg_last_error($connect)));
 		$k=pg_fetch_all($result);
 		if($success==1) { echo "<msg>OK</msg>"; }

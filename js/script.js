@@ -62,7 +62,7 @@ $(function() {//{{{
 		$('#msg').slideUp();
 	});
 
-	$("#leavensky_submit").click(function(){
+	$("#adijoz_submit").click(function(){
 		var collect={};
 		collect['leaves']=leaves().select("lday", "ltype");
 		collect['taken']={};

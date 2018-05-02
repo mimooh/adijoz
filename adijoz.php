@@ -1,12 +1,12 @@
 <?php
-session_name(getenv("LEAVENSKY_SESSION_NAME"));
+session_name(getenv("ADIJOZ_SESSION_NAME"));
 require_once("inc.php");
 
 function head() { /*{{{*/
 	echo "
 <HTML><HEAD>
 <META http-equiv=Content-Type content='text/html; charset=utf-8' />
-<title>leavensky</title>
+<title>adijoz</title>
 </HEAD>
 <link rel='stylesheet' type='text/css' href='css/css.css'>
 <link rel='stylesheet' type='text/css' href='css/datepicker.css' />
@@ -50,7 +50,7 @@ function submit_calendar() { /*{{{*/
 		$type[$key] = $row[1];
 	}
 	array_multisort($date, SORT_ASC,  $collect['leaves']);
-	$_SESSION['ll']->query("UPDATE leavensky SET leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
+	$_SESSION['ll']->query("UPDATE adijoz SET leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
 	unset($_REQUEST);
 }
 /*}}}*/
@@ -71,7 +71,7 @@ function db_read_disabled() {/*{{{*/
 	// holidays, etc.
 
 	$disabled=[];
-	$r=$_SESSION['ll']->query("SELECT leaves FROM leavensky WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
+	$r=$_SESSION['ll']->query("SELECT leaves FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
 	if(!empty($r)) { 
 		$leaves=json_decode($r[0]['leaves'],1);
 		foreach($leaves as $v) {
@@ -121,7 +121,7 @@ function calendar_submitter() {/*{{{*/
 	$block=$_SESSION['ll']->query("SELECT block FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]['block'];
 
 	$submitter='';
-	if(empty($_SESSION['leavensky_admin'])) { 
+	if(empty($_SESSION['adijoz_admin'])) { 
 		$submitter="<table style='width:1px'> <tr> <th>$i18n_choose<th> $titles </table>";
 		if($block==1) { 
 			$submitter.="<div style='display:inline-block'>";
@@ -130,7 +130,7 @@ function calendar_submitter() {/*{{{*/
 			$submitter.="</div><br>";
 		} else {
 			$submitter.="<div style='display:inline-block'>";
-			$submitter.="<input id=leavensky_submit type=submit>";
+			$submitter.="<input id=adijoz_submit type=submit>";
 			$submitter.="</div><br>";
 		}
 	}

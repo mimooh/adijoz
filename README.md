@@ -1,4 +1,4 @@
-# leavensky
+# adijoz
 
 Timeoff/vacation/leave planner. You can define your own set of leave types,
 like holidays, overdue, additional, etc. Then you setup limits for each leave type
