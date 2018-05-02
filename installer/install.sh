@@ -14,7 +14,7 @@ LEAVENSKY_LANG="en"
 USER=`id -ru`
 [ "X$USER" == "X0" ] && { echo "Don't run as root / sudo"; exit; }
 
-[ $LEAVENSKY_DB_PASS == 'secret1' ] && {  # TODO
+[ $LEAVENSKY_DB_PASS == 'secret' ] && {  
 	echo "Password for leavensky user needs to be changed from the default='secret'."; 
 	echo
 	exit;
@@ -93,7 +93,8 @@ CREATE TABLE leavensky (
 	limits text
 );
 
-CREATE VIEW v as SELECT people.name, people.department, people.id as user_id, leavensky.year, leavensky.creator_id, leavensky.leaves,leavensky.limits, leavensky.taken, leavensky.block FROM people LEFT JOIN leavensky ON (people.id=leavensky.user_id);
+CREATE VIEW v as SELECT people.name, people.department, people.id as user_id, leavensky.year, leavensky.creator_id, leavensky.leaves,leavensky.limits, leavensky.taken, leavensky.block 
+FROM people LEFT JOIN leavensky ON (people.id=leavensky.user_id);
 
 CREATE TRIGGER update_modified BEFORE UPDATE ON leavensky FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
@@ -113,5 +114,5 @@ echo;
 echo "Restarting apache..."
 sudo service apache2 restart
 echo;
-echo "One last thing is to setup your leave types in ../conf.json";
+echo "You need to configure the leave types in leavensky/conf.json";
 #}}}
