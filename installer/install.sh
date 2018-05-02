@@ -61,12 +61,13 @@ CREATE USER $LEAVENSKY_DB_USER WITH PASSWORD '$LEAVENSKY_DB_PASS';
 
 CREATE TABLE people(
 	id serial PRIMARY KEY,
-	name text
+	name text,
+	department text
 );
 
-INSERT INTO people(name) values('Lannister Jaimie');
-INSERT INTO people(name) values('Lannister Tyrion');
-INSERT INTO people(name) values('Lannister Cersei');
+INSERT INTO people(name,department) values('Lannister Jaimie', 'Lion');
+INSERT INTO people(name,department) values('Lannister Tyrion', 'Lion');
+INSERT INTO people(name,department) values('Lannister Cersei', 'Lion');
 
 -- Instead of using fake Lannisters above, you can connect to another DB containing real people by dblink:
 -- CREATE EXTENSION dblink;
@@ -92,7 +93,7 @@ CREATE TABLE leavensky (
 	limits text
 );
 
-CREATE VIEW v as SELECT people.name, people.id as user_id, leavensky.year, leavensky.creator_id, leavensky.leaves,leavensky.limits, leavensky.taken, leavensky.block FROM people LEFT JOIN leavensky ON (people.id=leavensky.user_id);
+CREATE VIEW v as SELECT people.name, people.department, people.id as user_id, leavensky.year, leavensky.creator_id, leavensky.leaves,leavensky.limits, leavensky.taken, leavensky.block FROM people LEFT JOIN leavensky ON (people.id=leavensky.user_id);
 
 CREATE TRIGGER update_modified BEFORE UPDATE ON leavensky FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
