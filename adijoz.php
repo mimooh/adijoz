@@ -42,7 +42,7 @@ function submit_calendar() { /*{{{*/
 		$type[$key] = $row[1];
 	}
 	array_multisort($date, SORT_ASC,  $collect['leaves']);
-	$_SESSION['ll']->query("UPDATE adijoz SET leaves=$1, taken=$2 WHERE year=$3 AND user_id=$4", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['year'],$_SESSION['user_id']));
+	$_SESSION['aa']->query("UPDATE adijoz SET leaves=$1, taken=$2 WHERE year=$3 AND user_id=$4", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['year'],$_SESSION['user_id']));
 	unset($_REQUEST);
 }
 /*}}}*/
@@ -62,7 +62,7 @@ function db_read_disabled() {/*{{{*/
 	// for normal users to select. Good for Saturdays/Sundays/religious holidays, etc.
 
 	$disabled=[];
-	$r=$_SESSION['ll']->query("SELECT leaves FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
+	$r=$_SESSION['aa']->query("SELECT leaves FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
 	if(!empty($r)) { 
 		$leaves=json_decode($r[0]['leaves'],1);
 		if(!empty($leaves)) { 
@@ -83,7 +83,7 @@ function db_read() {/*{{{*/
 		$_SESSION['setup']['titles'][$t[0]]=$t[1];
 	}
 
-	$r=$_SESSION['ll']->query("SELECT taken,limits,leaves FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']));
+	$r=$_SESSION['aa']->query("SELECT taken,limits,leaves FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']));
 	if(empty($r)) { die("$i18n_year_not_prepared ".$_SESSION['year']); }
 	$taken=json_decode($r[0]['taken'],1);
 	$limits=json_decode($r[0]['limits'],1);
@@ -111,7 +111,7 @@ function calendar_submitter() {/*{{{*/
 		$titles.="<th><label class=lradio id='l$k' title='$v'>$v</label>";
 	}
 
-	$block=$_SESSION['ll']->query("SELECT block FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]['block'];
+	$block=$_SESSION['aa']->query("SELECT block FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]['block'];
 
 	$submitter='';
 	if(empty($_SESSION['adijoz_admin'])) { 
@@ -150,7 +150,7 @@ function admin_change_user() {/*{{{*/
 	// Admin may want to inspect any user's leave calendar
 	if(!empty($_SESSION['adijoz_admin']) and isset($_GET['id'])) { 
 		$_SESSION['user_id']=$_GET['id'];
-		$_SESSION['user']=$_SESSION['ll']->query("SELECT name FROM people WHERE id=$1", array($_GET['id']))[0]['name'];
+		$_SESSION['user']=$_SESSION['aa']->query("SELECT name FROM people WHERE id=$1", array($_GET['id']))[0]['name'];
 	}
 }
 /*}}}*/
@@ -163,8 +163,8 @@ if(getenv("ADIJOZ_DISABLE_AUTH")==1) {
 	echo "<a class=blink href=admin.php>admin.php</a>";
 
 }
-if(empty($_SESSION['user_id'])) { $_SESSION['ll']->fatal("Not allowed"); }
-$_SESSION['ll']->logout_button();
+if(empty($_SESSION['user_id'])) { $_SESSION['aa']->fatal("Not allowed"); }
+$_SESSION['aa']->logout_button();
 make_year();
 admin_change_user();
 submit_calendar();

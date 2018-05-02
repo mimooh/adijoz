@@ -3,7 +3,7 @@ session_start();
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
-$_SESSION['ll']=new adijoz();
+$_SESSION['aa']=new adijoz();
 
 # debug/*{{{*/
 

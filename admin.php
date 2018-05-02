@@ -38,7 +38,7 @@ function form_limits() { /*{{{*/
 	<table> 
 	<tr><th>block<help title='".$i18n_meaning_of_block."'></help><th>name<th colspan=2>".join("<th colspan=2>",$titles);
 
-	foreach($_SESSION['ll']->query("SELECT * FROM v WHERE year=$1 ORDER BY name", array($_SESSION['year'])) as $r) { 
+	foreach($_SESSION['aa']->query("SELECT * FROM v WHERE year=$1 ORDER BY name", array($_SESSION['year'])) as $r) { 
 		$zeroes=array();
 		foreach(array_keys($titles) as $k) { 
 			$zeroes[$k]=0;
@@ -81,13 +81,13 @@ function submit_calendar() { /*{{{*/
 		$type[$key] = $row[1];
 	}
 	array_multisort($date, SORT_ASC,  $collect['leaves']);
-	$_SESSION['ll']->query("UPDATE adijoz SET block=1, leaves=$1, taken=$2 WHERE year=$3 AND user_id=-1", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['year']));
+	$_SESSION['aa']->query("UPDATE adijoz SET block=1, leaves=$1, taken=$2 WHERE year=$3 AND user_id=-1", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['year']));
 }
 /*}}}*/
 function submit_limits() { /*{{{*/
 	if(empty($_REQUEST['collect_limits'])) { return; }
 	foreach($_REQUEST['collect_limits'] as $k=>$v) {
-		$_SESSION['ll']->query("UPDATE adijoz SET block=$1, limits=$2 WHERE user_id=$3 AND year=$4", array($_REQUEST['block'][$k], json_encode($v), $k, $_SESSION['year']));
+		$_SESSION['aa']->query("UPDATE adijoz SET block=$1, limits=$2 WHERE user_id=$3 AND year=$4", array($_REQUEST['block'][$k], json_encode($v), $k, $_SESSION['year']));
 	}
 }
 /*}}}*/
@@ -96,21 +96,21 @@ function assert_years_ok() {/*{{{*/
 	// has a record in adijoz table
 
 	$year_entries=[];
-	foreach($_SESSION['ll']->query("SELECT user_id FROM adijoz WHERE year=$1", array($_SESSION['year'])) as $r) { 
+	foreach($_SESSION['aa']->query("SELECT user_id FROM adijoz WHERE year=$1", array($_SESSION['year'])) as $r) { 
 		$year_entries[]=$r['user_id'];
 	}
 
-	foreach($_SESSION['ll']->query("SELECT id FROM people ORDER BY name") as $r) {
+	foreach($_SESSION['aa']->query("SELECT id FROM people ORDER BY name") as $r) {
 		if(!in_array($r['id'], $year_entries)){ 
-			$_SESSION['ll']->query("INSERT INTO adijoz(user_id, year) VALUES($1,$2)", array($r['id'], $_SESSION['year']));
+			$_SESSION['aa']->query("INSERT INTO adijoz(user_id, year) VALUES($1,$2)", array($r['id'], $_SESSION['year']));
 		}
 	}
 
 }
 /*}}}*/
 function init_year() {/*{{{*/
-	#$_SESSION['ll']->query("DELETE FROM adijoz WHERE user_id=-1");
-	$r=$_SESSION['ll']->query("SELECT * FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
+	#$_SESSION['aa']->query("DELETE FROM adijoz WHERE user_id=-1");
+	$r=$_SESSION['aa']->query("SELECT * FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
 	if(!empty($r)) { return; }
 
 	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
@@ -118,7 +118,7 @@ function init_year() {/*{{{*/
 		$taken[$t[0]]=0;
 	}
 
-	$_SESSION['ll']->query("INSERT INTO adijoz(user_id,year,taken,limits) VALUES(-1,$1,$2,$2)", array($_SESSION['year'], json_encode($taken)));
+	$_SESSION['aa']->query("INSERT INTO adijoz(user_id,year,taken,limits) VALUES(-1,$1,$2,$2)", array($_SESSION['year'], json_encode($taken)));
 	
 }
 /*}}}*/
@@ -165,7 +165,7 @@ function form_calendar() { /*{{{*/
 }
 /*}}}*/
 function db() {/*{{{*/
-	dd($_SESSION['ll']->query("SELECT * FROM adijoz WHERE year=$1", array($_SESSION['year'])));
+	dd($_SESSION['aa']->query("SELECT * FROM adijoz WHERE year=$1", array($_SESSION['year'])));
 }
 /*}}}*/
 function db_read() {/*{{{*/
@@ -177,7 +177,7 @@ function db_read() {/*{{{*/
 		$_SESSION['setup']['titles'][$t[0]]=$t[1];
 	}
 
-	$r=$_SESSION['ll']->query("SELECT taken,limits,leaves FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
+	$r=$_SESSION['aa']->query("SELECT taken,limits,leaves FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
 	if(empty($r)) { die("$i18n_year_not_prepared ".$_SESSION['year']); }
 	$taken=json_decode($r[0]['taken'],1);
 	$limits=json_decode($r[0]['limits'],1);
@@ -209,10 +209,10 @@ if(getenv("ADIJOZ_DISABLE_AUTH")==1) {
 	$_SESSION['user']='Admin';
 	$_SESSION['adijoz_admin']=1;
 }
-if(empty($_SESSION['adijoz_admin'])) { $_SESSION['ll']->fatal("Not allowed"); }
+if(empty($_SESSION['adijoz_admin'])) { $_SESSION['aa']->fatal("Not allowed"); }
 
 #db();
-$_SESSION['ll']->logout_button();
+$_SESSION['aa']->logout_button();
 setup_year();
 assert_years_ok();
 submit_limits();
