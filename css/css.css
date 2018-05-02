@@ -141,14 +141,11 @@ label.lradio{
 	display: none;
 }
 
-help:after{
-    content: "";
-    display: block;
+help{
     background: url("qmark.svg") no-repeat;
     width: 20px;
     height: 20px;
-    float: right;
-    margin: 0 0px 0 6px;
+    float: left;
 }
 
 
@@ -205,3 +202,28 @@ textarea {
 	border: 1px solid #555;
 }
 /*}}}*/
+
+msg, fatal, cannot {
+	z-index: 999;
+	position:fixed;
+	left:0px;
+	min-height: 30px;
+	top:0px;
+    text-align:center;
+    width:500px;
+	opacity: 0.9;
+    background-color: #063;
+    color: #fff;
+    padding: 10px;
+	background-position: 99% 1%;
+    background-repeat: no-repeat; 
+
+}
+fatal, cannot {
+    background-color: #a00;
+	padding: 20px;
+    border-radius: 2px; 
+	border: 1px solid #fff;
+	box-shadow: 0 1px 4px #000;
+}
+

@@ -36,7 +36,7 @@ function form_limits() { /*{{{*/
 
 	<form method=post> 
 	<table> 
-	<tr><th>block <help title='".$i18n_meaning_of_block."'></help> <th>name<th colspan=2>".join("<th colspan=2>",$titles);
+	<tr><th>block<help title='".$i18n_meaning_of_block."'></help><th>name<th colspan=2>".join("<th colspan=2>",$titles);
 
 	foreach($_SESSION['ll']->query("SELECT * FROM v WHERE year=$1 ORDER BY name", array($_SESSION['year'])) as $r) { 
 		$zeroes=array();
@@ -64,12 +64,8 @@ function form_limits() { /*{{{*/
 
 	echo "
 	</table>
-
-	<div style='display:inline-block'>
 		<input type=submit value='OK'>
 		<help title='".$i18n_admin_submit_year."'></help>
-		<br>
-	</div>
 	<br><br>
 	</form>
 	";
@@ -85,13 +81,13 @@ function submit_calendar() { /*{{{*/
 		$type[$key] = $row[1];
 	}
 	array_multisort($date, SORT_ASC,  $collect['leaves']);
-	$_SESSION['ll']->query("UPDATE adijoz SET block=1, leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=-1", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year']));
+	$_SESSION['ll']->query("UPDATE adijoz SET block=1, leaves=$1, taken=$2 WHERE year=$3 AND user_id=-1", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['year']));
 }
 /*}}}*/
 function submit_limits() { /*{{{*/
 	if(empty($_REQUEST['collect_limits'])) { return; }
 	foreach($_REQUEST['collect_limits'] as $k=>$v) {
-		$_SESSION['ll']->query("UPDATE adijoz SET block=$1, limits=$2, creator_id=$3 WHERE user_id=$4 AND year=$5", array($_REQUEST['block'][$k], json_encode($v), $_SESSION['creator_id'], $k, $_SESSION['year']));
+		$_SESSION['ll']->query("UPDATE adijoz SET block=$1, limits=$2 WHERE user_id=$3 AND year=$4", array($_REQUEST['block'][$k], json_encode($v), $k, $_SESSION['year']));
 	}
 }
 /*}}}*/
@@ -145,11 +141,9 @@ function setup_year() {/*{{{*/
 function calendar_submitter() { /*{{{*/
 	extract($_SESSION['i18n']);
 	$submitter='';
-	$submitter.="<div style='display:inline-block'>";
 	$submitter.="<input id=adijoz_submit type=submit>";
 	$submitter.="<help title='".$i18n_howto_disabled_days."'></help>";
-
-	$submitter.="</div><br>";
+	$submitter.="<br>";
 	return $submitter;
 }
 /*}}}*/
@@ -208,10 +202,13 @@ function db_read() {/*{{{*/
 }
 /*}}}*/
 
-$_SESSION['creator_id']=666;
-$_SESSION['adijoz_admin']=1;
-#db();
 head();
+// Adijoz is meant to be authenticated in a separate login system. That system needs to setup $_SESSION['adijoz_admin']=1.
+// If you don't care about authentication just set $_SESSION['adijoz_admin']=1; 
+// $_SESSION['adijoz_admin']=1;
+if(empty($_SESSION['adijoz_admin'])) { $_SESSION['ll']->fatal("Err 611: not allowed. Look for this message in the php code to unblock."); }
+
+#db();
 setup_year();
 assert_years_ok();
 submit_limits();

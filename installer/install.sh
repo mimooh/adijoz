@@ -4,6 +4,7 @@ ADIJOZ_DB_USER='adijoz'
 ADIJOZ_DB_PASS='secret'  
 ADIJOZ_SESSION_NAME='adijoz'
 ADIJOZ_LANG="en"	
+ADIJOZ_NOTIFY="user@gmail.com"   # Your email for DB failure reports, etc.
 
 # End of configuration. Run this shell script to setup postgres for adijoz project. Then restart apache.
 # If you are on a hosting server with users that cannot be trust and/or if you cannot write to /etc/apache2/envvars
@@ -27,6 +28,8 @@ echo "export ADIJOZ_DB_USER='$ADIJOZ_DB_USER'" >> $temp
 echo "export ADIJOZ_DB_PASS='$ADIJOZ_DB_PASS'" >> $temp
 echo "export ADIJOZ_SESSION_NAME='$ADIJOZ_SESSION_NAME'" >> $temp
 echo "export ADIJOZ_LANG='$ADIJOZ_LANG'" >> $temp
+echo "export ADIJOZ_NOTIFY='$ADIJOZ_NOTIFY'" >> $temp
+
 sudo cp $temp /etc/apache2/envvars
 rm $temp
 
@@ -85,7 +88,6 @@ CREATE TABLE adijoz (
 	id serial PRIMARY KEY, 
 	year int,
 	user_id int,
-	creator_id int,
 	modified timestamp default current_timestamp,
 	taken text,
 	leaves text,
@@ -93,7 +95,7 @@ CREATE TABLE adijoz (
 	limits text
 );
 
-CREATE VIEW v as SELECT people.name, people.department, people.id as user_id, adijoz.year, adijoz.creator_id, adijoz.leaves,adijoz.limits, adijoz.taken, adijoz.block 
+CREATE VIEW v as SELECT people.name, people.department, people.id as user_id, adijoz.year, adijoz.leaves,adijoz.limits, adijoz.taken, adijoz.block 
 FROM people LEFT JOIN adijoz ON (people.id=adijoz.user_id);
 
 CREATE TRIGGER update_modified BEFORE UPDATE ON adijoz FOR EACH ROW EXECUTE PROCEDURE update_modified_column();

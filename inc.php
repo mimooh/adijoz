@@ -52,7 +52,7 @@ class adijoz{/*{{{*/
 /*}}}*/
 	private function reportbug($arr) {/*{{{*/
 		$reportquery=join("\n" , array('--------' , date("G:i:s"), $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT'], $_SERVER['REQUEST_URI'], $arr[0] , $arr[1] , $arr[2] , "\n\n"));
-		mail('mimoohowy@gmail.com', 'Adijoz bug!', "$reportquery", "from: mimooh@inf.sgsp.edu.pl"); 
+		mail(getenv("ADIJOZ_NOTIFY"), 'Adijoz bug!', "$reportquery", "from: adijoz"); 
 		echo "<fatal>".$arr[0]."</fatal>"; 
 		die();
 }

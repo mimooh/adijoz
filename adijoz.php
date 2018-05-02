@@ -33,14 +33,6 @@ function make_year() {/*{{{*/
 	";
 }
 /*}}}*/
-function make_user() {/*{{{*/
-	if(isset($_GET['id'])) { 
-		$_SESSION['user_id']=$_GET['id'];
-		$_SESSION['user']=$_SESSION['ll']->query("SELECT name FROM people WHERE id=$1", array($_SESSION['user_id']))[0]['name'];
-	}
-	$_SESSION['creator_id']=666;
-}
-/*}}}*/
 function submit_calendar() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
 	$collect=json_decode($_REQUEST['collect'],1);
@@ -50,7 +42,7 @@ function submit_calendar() { /*{{{*/
 		$type[$key] = $row[1];
 	}
 	array_multisort($date, SORT_ASC,  $collect['leaves']);
-	$_SESSION['ll']->query("UPDATE adijoz SET leaves=$1, taken=$2, creator_id=$3 WHERE year=$4 AND user_id=$5", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['creator_id'], $_SESSION['year'],$_SESSION['user_id']));
+	$_SESSION['ll']->query("UPDATE adijoz SET leaves=$1, taken=$2 WHERE year=$3 AND user_id=$4", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['year'],$_SESSION['user_id']));
 	unset($_REQUEST);
 }
 /*}}}*/
@@ -66,16 +58,17 @@ function form_year() {/*{{{*/
 }
 /*}}}*/
 function db_read_disabled() {/*{{{*/
-	// user_id == -1  is admin. Whatever he chooses as leaves will be disabled
-	// for normal users to select. Good for Saturdays/Sundays/religious
-	// holidays, etc.
+	// user_id == -1  is admin. Whatever he had chosen as leaves will be disabled
+	// for normal users to select. Good for Saturdays/Sundays/religious holidays, etc.
 
 	$disabled=[];
 	$r=$_SESSION['ll']->query("SELECT leaves FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
 	if(!empty($r)) { 
 		$leaves=json_decode($r[0]['leaves'],1);
-		foreach($leaves as $v) {
-			$disabled[]=$v[0];
+		if(!empty($leaves)) { 
+			foreach($leaves as $v) {
+				$disabled[]=$v[0];
+			}
 		}
 	}
 	return $disabled;
@@ -124,10 +117,9 @@ function calendar_submitter() {/*{{{*/
 	if(empty($_SESSION['adijoz_admin'])) { 
 		$submitter="<table style='width:1px'> <tr> <th>$i18n_choose<th> $titles </table>";
 		if($block==1) { 
-			$submitter.="<div style='display:inline-block'>";
-			$submitter.="&nbsp; Blocked";
+			$submitter.="Blocked";
 			$submitter.="<help title='".$i18n_howto_unblock."'></help>";
-			$submitter.="</div><br>";
+			$submitter.="<br><br>";
 		} else {
 			$submitter.="<div style='display:inline-block'>";
 			$submitter.="<input id=adijoz_submit type=submit>";
@@ -154,10 +146,23 @@ function form_calendar() { /*{{{*/
 
 }
 /*}}}*/
+function admin_change_user() {/*{{{*/
+	// Admin may want to inspect any user's leave calendar
+	if(!empty($_SESSION['adijoz_admin']) and isset($_GET['id'])) { 
+		$_SESSION['user_id']=$_GET['id'];
+		$_SESSION['user']=$_SESSION['ll']->query("SELECT name FROM people WHERE id=$1", array($_GET['id']))[0]['name'];
+	}
+}
+/*}}}*/
 
 head();
+
+// Adijoz is meant to be authenticated in a separate login system. That system needs to setup $_SESSION['user_id'].
+// If you don't care about authentication just set $_SESSION['user_id'] to a valid user_id from people table.
+// $_SESSION['user_id']=1;
+if(empty($_SESSION['user_id'])) { $_SESSION['ll']->fatal("Err 612: not allowed. Look for this message in the php code to unblock."); }
 make_year();
-make_user();
+admin_change_user();
 submit_calendar();
 form_year();
 db_read();
