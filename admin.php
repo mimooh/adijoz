@@ -29,7 +29,7 @@ function form_limits() { /*{{{*/
 
 	echo "
 	<form method=post>
-	<br><br>&nbsp;Year
+	<br>&nbsp;Year
 	<input type=text name=change_year size=4 value=".$_SESSION['year'].">
 	<input type=submit name='submit_year' value='set'>
 	</form>
@@ -203,12 +203,16 @@ function db_read() {/*{{{*/
 /*}}}*/
 
 head();
-// Adijoz is meant to be authenticated in a separate login system. That system needs to setup $_SESSION['adijoz_admin']=1.
-// If you don't care about authentication just set $_SESSION['adijoz_admin']=1; 
-// $_SESSION['adijoz_admin']=1;
-if(empty($_SESSION['adijoz_admin'])) { $_SESSION['ll']->fatal("Err 611: not allowed. Look for this message in the php code to unblock."); }
+
+if(getenv("ADIJOZ_DISABLE_AUTH")==1) { 
+	$_SESSION['user_id']=-1; 
+	$_SESSION['user']='Admin';
+	$_SESSION['adijoz_admin']=1;
+}
+if(empty($_SESSION['adijoz_admin'])) { $_SESSION['ll']->fatal("Not allowed"); }
 
 #db();
+$_SESSION['ll']->logout_button();
 setup_year();
 assert_years_ok();
 submit_limits();
@@ -216,5 +220,6 @@ submit_calendar();
 db_read();
 form_limits();
 form_calendar();
+
 
 ?>

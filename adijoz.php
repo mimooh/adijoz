@@ -49,7 +49,7 @@ function submit_calendar() { /*{{{*/
 function form_year() {/*{{{*/
 	echo "
 	<form method=post>
-	<br> ".$_SESSION['user'].", year
+	<br>&nbsp; Year
 	<input type=text name=change_year size=4 value=".$_SESSION['year'].">
 	<input type=submit value='set'>
 	</form>
@@ -157,10 +157,14 @@ function admin_change_user() {/*{{{*/
 
 head();
 
-// Adijoz is meant to be authenticated in a separate login system. That system needs to setup $_SESSION['user_id'].
-// If you don't care about authentication just set $_SESSION['user_id'] to a valid user_id from people table.
-// $_SESSION['user_id']=1;
-if(empty($_SESSION['user_id'])) { $_SESSION['ll']->fatal("Err 612: not allowed. Look for this message in the php code to unblock."); }
+if(getenv("ADIJOZ_DISABLE_AUTH")==1) { 
+	$_SESSION['user_id']=1; 
+	$_SESSION['user']='Lannister Jaimie';
+	echo "<a class=blink href=admin.php>admin.php</a>";
+
+}
+if(empty($_SESSION['user_id'])) { $_SESSION['ll']->fatal("Not allowed"); }
+$_SESSION['ll']->logout_button();
 make_year();
 admin_change_user();
 submit_calendar();

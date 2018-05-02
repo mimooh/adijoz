@@ -1,17 +1,33 @@
 #!/bin/bash
 
+#  =================  START OF CONFIGURATION  ===============
+
 ADIJOZ_DB_USER='adijoz'  
 ADIJOZ_DB_PASS='secret'  
 ADIJOZ_SESSION_NAME='adijoz'
 ADIJOZ_LANG="en"	
-ADIJOZ_NOTIFY="user@gmail.com"   # Your email for DB failure reports, etc.
+ADIJOZ_LOGOUT_URL="/"	
 
-# End of configuration. Run this shell script to setup postgres for adijoz project. Then restart apache.
-# If you are on a hosting server with users that cannot be trust and/or if you cannot write to /etc/apache2/envvars
-# then you need to find your way to propagate these variables for www-data user. Or just make them constants in
-# adijoz code.
+# Your email for DB failure notificatins, etc.
+ADIJOZ_NOTIFY="user@gmail.com"  
 
-# init 
+# Adijoz is meant to be integrated with a separate authentication form. By
+# default ADIJOZ_DISABLE_AUTH is ON, which lets you test the system, but allows
+# everyone to use it. You need a form which authenticates the users and sets
+# $_SESSION['user_id'] (people.id) and $_SESSION['user'] (people.name). See the
+# people table below in this script. Once you have coded the authentication
+# form, just set ADIJOZ_DISABLE_AUTH=0.
+ADIJOZ_DISABLE_AUTH=1			
+
+# Run this shell script to setup postgres for adijoz project. If you are on a
+# hosting server with users that cannot be trusted and/or if you cannot write
+# to /etc/apache2/envvars then you need to find your way to propagate these
+# variables for www-data user. Or just make them constants in adijoz code.
+
+#  =================  END OF CONFIGURATION  ===============
+
+
+# init #{{{
 USER=`id -ru`
 [ "X$USER" == "X0" ] && { echo "Don't run as root / sudo"; exit; }
 
@@ -20,7 +36,7 @@ USER=`id -ru`
 	echo
 	exit;
 } 
-
+#}}}
 # www-data user needs ADIJOZ_DB vars. They are kept in www-data environment: /etc/apache2/envvars #{{{
 temp=`mktemp`
 sudo cat /etc/apache2/envvars | grep -v ADIJOZ_  > $temp
@@ -28,7 +44,9 @@ echo "export ADIJOZ_DB_USER='$ADIJOZ_DB_USER'" >> $temp
 echo "export ADIJOZ_DB_PASS='$ADIJOZ_DB_PASS'" >> $temp
 echo "export ADIJOZ_SESSION_NAME='$ADIJOZ_SESSION_NAME'" >> $temp
 echo "export ADIJOZ_LANG='$ADIJOZ_LANG'" >> $temp
+echo "export ADIJOZ_LOGOUT_URL='$ADIJOZ_LOGOUT_URL'" >> $temp
 echo "export ADIJOZ_NOTIFY='$ADIJOZ_NOTIFY'" >> $temp
+echo "export ADIJOZ_DISABLE_AUTH='$ADIJOZ_DISABLE_AUTH'" >> $temp
 
 sudo cp $temp /etc/apache2/envvars
 rm $temp

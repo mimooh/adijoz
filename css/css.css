@@ -44,7 +44,7 @@ table {
 }
 
 
-table a:link, table a:visited {
+a:link, a:visited {
 	color: #fff;
 	text-decoration:none;
 }
