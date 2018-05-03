@@ -18,6 +18,18 @@ function head() { /*{{{*/
 ";
 }
 /*}}}*/
+
+function menu() {/*{{{*/
+	echo "
+	<form method=post>
+	Year <input type=text name=change_year size=4 value=".$_SESSION['year'].">
+	<input type=submit name='submit_year' value='set'>
+	</form>
+	<a class=blink href=?limits_view>Limits View</a> 
+	<a class=blink href=?department>Departments View</a> 
+	";
+}
+/*}}}*/
 function form_limits() { /*{{{*/
 	extract($_SESSION['i18n']);
 
@@ -28,17 +40,11 @@ function form_limits() { /*{{{*/
 	}
 
 	echo "
-	<form method=post>
-	<br>&nbsp;Year
-	<input type=text name=change_year size=4 value=".$_SESSION['year'].">
-	<input type=submit name='submit_year' value='set'>
-	</form>
-
 	<form method=post> 
 	<table> 
-	<tr><th>block<help title='".$i18n_meaning_of_block."'></help><th>name<th colspan=2>".join("<th colspan=2>",$titles);
+	<tr><th>block<help title='".$i18n_meaning_of_block."'></help><th>department<th>name<th colspan=2>".join("<th colspan=2>",$titles);
 
-	foreach($_SESSION['aa']->query("SELECT * FROM v WHERE year=$1 ORDER BY name", array($_SESSION['year'])) as $r) { 
+	foreach($_SESSION['aa']->query("SELECT * FROM v WHERE year=$1 ORDER BY department,name", array($_SESSION['year'])) as $r) { 
 		$zeroes=array();
 		foreach(array_keys($titles) as $k) { 
 			$zeroes[$k]=0;
@@ -51,7 +57,8 @@ function form_limits() { /*{{{*/
 		if(empty($r['block'])) { $r['block']=0; }
 
 		echo "<tr><td><input autocomplete=off class=block_$r[block] type=text name=block[$r[user_id]] value='$r[block]' size=1>";
-		echo "<td><span style='white-space:nowrap'><a class=rlink target=_ href='adijoz.php?id=$r[user_id]'>$r[name]($r[user_id])</a></span>";
+		echo "<td>$r[department]";
+		echo "<td><span style='white-space:nowrap'><a class=rlink target=_ href='adijoz.php?id=$r[user_id]'>$r[name] ($r[user_id])</a></span>";
 		$bg="";
 		foreach($limits as $k=>$i) { 
 			if($taken[$k] > $limits[$k]) { $bg="style='background-color: #a00'"; }
@@ -214,15 +221,14 @@ function each_day_of_year() {/*{{{*/
 }
 /*}}}*/
 function list_departments() {/*{{{*/
-	echo "By departments:<br>";
-	echo "<a class=blink href=".$_SERVER['SCRIPT_NAME'].">Off</a>";
+	echo "<br><br><br>By departments:<br>";
 	foreach($_SESSION['aa']->query("SELECT DISTINCT department FROM people ORDER BY department") as $r) { 
 		echo "<a class=blink href=?department=$r[department]>$r[department]</a>";
 	}
 }
 /*}}}*/
 function by_departments() { /*{{{*/
-	if(!isset($_GET['department'])) { return; }
+	if(empty($_GET['department'])) { return; }
 	each_day_of_year();
 	$_SESSION['each_day_department']=[];
 	foreach($_SESSION['aa']->query("SELECT name,leaves FROM v WHERE department=$1 AND year=$2 ORDER BY name", array($_GET['department'], $_SESSION['year'])) as $r) { 
@@ -242,7 +248,8 @@ function by_departments() { /*{{{*/
 		echo "<td>$name";
 	}
 	foreach(array_keys($_SESSION['each_day'][$_SESSION['year']]) as $day) {
-		echo "<tr><td>$day";
+		echo "<tr><td><span style='white-space:nowrap'>$day</span>";
+		 
 		foreach($names as $name) { 
 			echo "<td>".$_SESSION['each_day_department'][$name][$day];
 		}
@@ -267,9 +274,14 @@ assert_years_ok();
 submit_limits();
 submit_calendar();
 db_read();
-form_limits();
-form_calendar();
-list_departments();
-by_departments();
+menu();
+if(isset($_GET['limits_view'])) { 
+	form_limits();
+	form_calendar();
+}
+if(isset($_GET['department'])) { 
+	list_departments();
+	by_departments();
+}
 
 ?>
