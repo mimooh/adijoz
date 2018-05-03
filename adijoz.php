@@ -49,7 +49,7 @@ function submit_calendar() { /*{{{*/
 function form_year() {/*{{{*/
 	echo "
 	<form method=post>
-	<br>&nbsp; Year
+	<br>Year
 	<input type=text name=change_year size=4 value=".$_SESSION['year'].">
 	<input type=submit value='set'>
 	</form>

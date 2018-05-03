@@ -84,9 +84,11 @@ CREATE TABLE people(
 	department text
 );
 
-INSERT INTO people(name,department) values('Lannister Jaimie', 'Lion');
-INSERT INTO people(name,department) values('Lannister Tyrion', 'Lion');
-INSERT INTO people(name,department) values('Lannister Cersei', 'Lion');
+INSERT INTO people(name , department) values('Lannister Jaimie' , 'Lannisters');
+INSERT INTO people(name , department) values('Lannister Tyrion' , 'Lannisters');
+INSERT INTO people(name , department) values('Lannister Cersei' , 'Lannisters');
+INSERT INTO people(name , department) values('Stark Ned'        , 'Starks');
+INSERT INTO people(name , department) values('Stark Sansa'      , 'Starks');
 
 -- Instead of using fake Lannisters above, you can connect to another DB containing real people by dblink:
 -- CREATE EXTENSION dblink;

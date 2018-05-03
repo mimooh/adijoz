@@ -202,6 +202,54 @@ function db_read() {/*{{{*/
 }
 /*}}}*/
 
+function each_day_of_year() {/*{{{*/
+	if(isset($_SESSION['each_day'][$_SESSION['year']])) { return; }
+	$_SESSION['each_day'][$_SESSION['year']]=array();
+	$day=strtotime($_SESSION['year']."-01-01");
+	$end=strtotime($_SESSION['year']."-12-31");
+	while($day <= $end) { 
+		$_SESSION['each_day'][$_SESSION['year']][date("Y-m-d", $day)]='';
+		$day=strtotime("+1 Day", $day);
+	}
+}
+/*}}}*/
+function list_departments() {/*{{{*/
+	echo "By departments:<br>";
+	echo "<a class=blink href=".$_SERVER['SCRIPT_NAME'].">Off</a>";
+	foreach($_SESSION['aa']->query("SELECT DISTINCT department FROM people ORDER BY department") as $r) { 
+		echo "<a class=blink href=?department=$r[department]>$r[department]</a>";
+	}
+}
+/*}}}*/
+function by_departments() { /*{{{*/
+	if(!isset($_GET['department'])) { return; }
+	each_day_of_year();
+	$_SESSION['each_day_department']=[];
+	foreach($_SESSION['aa']->query("SELECT name,leaves FROM v WHERE department=$1 AND year=$2 ORDER BY name", array($_GET['department'], $_SESSION['year'])) as $r) { 
+		$leaves=[];
+		$_SESSION['each_day_department'][$r['name']]=$_SESSION['each_day'][$_SESSION['year']];
+		$leaves=json_decode($r['leaves'],1);
+		if(!empty($leaves)) { 
+			foreach($leaves as $v) {
+				$_SESSION['each_day_department'][$r['name']][$v[0]]=$v[1];
+			}
+		}
+	}
+	echo "<table>";
+	echo "<tr><td>date";
+	$names=array_keys($_SESSION['each_day_department']);
+	foreach($names as $name) { 
+		echo "<td>$name";
+	}
+	foreach(array_keys($_SESSION['each_day'][$_SESSION['year']]) as $day) {
+		echo "<tr><td>$day";
+		foreach($names as $name) { 
+			echo "<td>".$_SESSION['each_day_department'][$name][$day];
+		}
+	}
+}
+
+/*}}}*/
 head();
 
 if(getenv("ADIJOZ_DISABLE_AUTH")==1) { 
@@ -221,6 +269,7 @@ submit_calendar();
 db_read();
 form_limits();
 form_calendar();
-
+list_departments();
+by_departments();
 
 ?>
