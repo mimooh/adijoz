@@ -38,7 +38,6 @@ table {
 	border-collapse: collapse;
 	font-size: 13px;
 	width: 780px;
-	text-shadow: 1px 1px 0px #222;
 	margin:10px;
 }
 
@@ -101,7 +100,6 @@ table a:active, table a:hover {
 .tableMenu a:hover, .tableMenu a:active {
 	color: #fff;
 	border: 1px solid #000;
-	text-shadow: 0 0px 1px rgba(0,0,0,0.1);
 }
 /*}}}*/
 

@@ -152,13 +152,10 @@ div.datepicker a {
 }
 
 tbody.datepickerDays td.datepickerSelected{
-  background: #123;
+  background: #f80;
 }
 div.datepicker td.datepickerSelected a {
-  color:white;
-}
-div.datepicker a:hover, div.datepicker a:hover {
-  background: #123;
+  color:#222;
 }
 
 td.datepickerDisabled a, td.datepickerDisabled.datepickerNotInMonth a{
