@@ -6,10 +6,7 @@
 [
 	[ "zal"  , "zaległy" ]              ,
 	[ "wyp"  , "wypoczynkowy" ]         ,
-	[ "dod"  , "dodatkowy" ]            ,
-	[ "sl"   , "służba" ]               ,
-	[ "dwps" , "d.w.po.sł" ]			,
-	[ "zl"   , "zw.lekarskie" ]
+	[ "dod"  , "dodatkowy" ]            
 ]
 
 }

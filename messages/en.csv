@@ -1,5 +1,5 @@
 i18n_days_left				; Left
-i18n_choose					; Choose
+i18n_I_am_planning			; I'm planning
 i18n_howto_unblock			; Administrator decided your time-off has been submitted. Administrator can unblock the form if you need further editions.
 i18n_year_not_prepared		; Administrator hasn't prepared data for year
 i18n_howto_disabled_days	; You can setup days (holidays) that will be not selectable by the users.

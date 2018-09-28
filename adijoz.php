@@ -58,8 +58,12 @@ function form_year() {/*{{{*/
 }
 /*}}}*/
 function db_read_disabled() {/*{{{*/
-	// user_id == -1  is admin. Whatever he had chosen as leaves will be disabled
-	// for normal users to select. Good for Saturdays/Sundays/religious holidays, etc.
+	# psql adijoz -c "SELECT name FROM people ORDER BY name";
+	# psql adijoz -c "DELETE from adijoz";
+	# psql adijoz -c "SELECT * from adijoz";
+	# psql adijoz -c "insert into people(name) values('antonio')";
+	# user_id == -1  is admin. Whatever he had chosen as leaves will be disabled
+	# for normal users to select. Good for Saturdays/Sundays/religious holidays, etc.
 
 	$disabled=[];
 	$r=$_SESSION['aa']->query("SELECT leaves FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
@@ -115,7 +119,7 @@ function calendar_submitter() {/*{{{*/
 
 	$submitter='';
 	if(empty($_SESSION['adijoz_admin'])) { 
-		$submitter="<table style='width:1px'> <tr> <th>$i18n_choose<th> $titles </table>";
+		$submitter="<table style='width:1px'> <tr> <th>$i18n_I_am_planning<th> $titles </table>";
 		if($block==1) { 
 			$submitter.="Blocked";
 			$submitter.="<help title='".$i18n_howto_unblock."'></help>";

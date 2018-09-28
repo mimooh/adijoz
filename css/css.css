@@ -105,9 +105,14 @@ table a:active, table a:hover {
 
 label.lradio{
 	display: inline-block;
-	cursor: default;
 	user-select: none;
 	padding: 8px;
+    cursor:pointer;
+	background-color: #600;
+	color: #fff;
+	border-radius: 2px;
+	border: 1px solid #888; 
+	opacity: 0.2;
 }
 
 #msg {
@@ -125,7 +130,6 @@ label.lradio{
 }
 
 #preview{
-	min-width: 200px;
 	float: right;
 	margin: 10px;
 	width: 100px;

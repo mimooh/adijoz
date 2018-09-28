@@ -12,8 +12,8 @@ function dbInit() {//{{{
 //}}}
 function setCurrentType(e) {//{{{
 	currentType=e.target.id.substr(1);
-	$(".lradio").css("background-color", "transparent");
-	e.target.style.backgroundColor="#800";
+	$(".lradio").css("opacity", 0.2);
+	e.target.style.opacity=1;
 }
 //}}}
 
@@ -52,7 +52,7 @@ function updatePreview() {//{{{
 $(function() {//{{{
 	dbInit();
 	for (currentType in setup['titles']) break; // init currentType to the first elem
-	$("#l"+currentType).css("background-color", "#800");
+	$("#l"+currentType).css("opacity", 1);
 
 	$(".lradio").on("click", function(e) {
 		setCurrentType(e);
@@ -96,7 +96,7 @@ function displayCalendarUser() {//{{{
 		current: year+"-01",
 		date: leaves().select("lday"),
 		starts: 1,
-		calendars: 4 ,
+		calendars: 12 ,
 		onRenderCell: function(el,date) {
 			if(setup.disabled.includes(moment(new Date(date)).format("YYYY-MM-DD"))) { 
 				return {'disabled': 1};
@@ -118,7 +118,7 @@ function displayCalendarAdmin() {//{{{
 		date: leaves().select("lday"),
 		current: year+"-01",
 		starts: 1,
-		calendars: 4 ,
+		calendars: 12 ,
 		onChange: function(data){
 			updateDB(data);
 			updatePreview();

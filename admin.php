@@ -171,10 +171,6 @@ function form_calendar() { /*{{{*/
 
 }
 /*}}}*/
-function db() {/*{{{*/
-	dd($_SESSION['aa']->query("SELECT * FROM adijoz WHERE year=$1", array($_SESSION['year'])));
-}
-/*}}}*/
 function db_read() {/*{{{*/
 	extract($_SESSION['i18n']);
 	$_SESSION['setup']=[];
@@ -259,15 +255,14 @@ function by_departments() { /*{{{*/
 /*}}}*/
 head();
 
-#if(getenv("ADIJOZ_DISABLE_AUTH")==1) { 
+if(getenv("ADIJOZ_DISABLE_AUTH")==1) { 
 	#$_SESSION['home_url']=$_SERVER['SCRIPT_NAME'];
 	$_SESSION['user_id']=-1; 
 	$_SESSION['user']='Admin';
 	$_SESSION['adijoz_admin']=1;
-#}
-#if(empty($_SESSION['adijoz_admin'])) { $_SESSION['aa']->fatal("Not allowed"); }
+}
+if(empty($_SESSION['adijoz_admin'])) { $_SESSION['aa']->fatal("Not allowed"); }
 
-#db();
 $_SESSION['aa']->logout_button();
 setup_year();
 assert_years_ok();
