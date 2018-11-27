@@ -2,6 +2,10 @@
 session_name(getenv("ADIJOZ_SESSION_NAME"));
 require_once("inc.php");
 
+# Init year for the users. Leave just limits that were set by the admin:
+# psql adijoz -c "UPDATE adijoz SET taken=null, leaves=null, block=0 WHERE year=2018";
+# psql adijoz -c "SELECT * FROM adijoz WHERE user_id=25 AND year=2018";
+
 function head() { /*{{{*/
 	echo "
 <HTML><HEAD>
