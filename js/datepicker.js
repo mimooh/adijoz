@@ -201,6 +201,7 @@
          * @return hash with the following optional attributes:
          *         selected: if true, date will be selected
          *         disabled: if true, date cell will be disabled
+         *         holiday: if true, date cell will be displayed in red
          *         className: css class name to add to the cell
          */
         onRenderCell: function() { return {} },
@@ -355,8 +356,8 @@
                 data.weeks[indic].days[indic2].classname.push('datepickerSelected');
               }
             }
-            if (fromUser.disabled) {
-              data.weeks[indic].days[indic2].classname.push('datepickerDisabled');
+            if (fromUser.holiday) {
+              data.weeks[indic].days[indic2].classname.push('datepickerHoliday');
             }
             if (fromUser.className) {
               data.weeks[indic].days[indic2].classname.push(fromUser.className);

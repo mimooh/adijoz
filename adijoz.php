@@ -57,25 +57,25 @@ function form_year() {/*{{{*/
 
 }
 /*}}}*/
-function db_read_disabled() {/*{{{*/
+function db_read_holidays() {/*{{{*/
 	# psql adijoz -c "SELECT name FROM people ORDER BY name";
 	# psql adijoz -c "DELETE from adijoz";
 	# psql adijoz -c "SELECT * from adijoz";
 	# psql adijoz -c "insert into people(name) values('antonio')";
-	# user_id == -1  is admin. Whatever he had chosen as leaves will be disabled
-	# for normal users to select. Good for Saturdays/Sundays/religious holidays, etc.
+	# user_id == -1  is admin. Whatever he had chosen as leaves will mark holidays
+	# Good for Saturdays/Sundays/religious holidays, etc.
 
-	$disabled=[];
+	$holidays=[];
 	$r=$_SESSION['aa']->query("SELECT leaves FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
 	if(!empty($r)) { 
 		$leaves=json_decode($r[0]['leaves'],1);
 		if(!empty($leaves)) { 
 			foreach($leaves as $v) {
-				$disabled[]=$v[0];
+				$holidays[]=$v[0];
 			}
 		}
 	}
-	return $disabled;
+	return $holidays;
 }
 /*}}}*/
 function db_read() {/*{{{*/
@@ -94,7 +94,7 @@ function db_read() {/*{{{*/
 	$leaves=json_decode($r[0]['leaves'],1);
 	$_SESSION['setup']["summary"]=array('taken'=>$taken, 'limits'=>$limits); 
 	$_SESSION['setup']["leaves"]=$leaves;
-	$_SESSION['setup']['disabled']=db_read_disabled();
+	$_SESSION['setup']['holidays']=db_read_holidays();
 	$_SESSION['setup']['user']='user';
 
 

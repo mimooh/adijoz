@@ -137,29 +137,3 @@ div.datepicker tbody.datepickerDays td.datepickerNotInMonth:hover {
   background-color: transparent;
 }
 
-td.datepickerblock {
-	background: #444;
-}
-
-
-
-
-div.datepicker a {
-  color: #fff;
-  text-decoration: none;
-  cursor: default;
-  outline: none;
-}
-
-tbody.datepickerDays td.datepickerSelected{
-  background: #f80;
-}
-div.datepicker td.datepickerSelected a {
-  color:#222;
-}
-
-td.datepickerDisabled a, td.datepickerDisabled.datepickerNotInMonth a{
-  color: #444;
-  background-color: #444;
-  text-shadow: none;
-}

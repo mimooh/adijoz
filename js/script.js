@@ -98,10 +98,10 @@ function displayCalendarUser() {//{{{
 		starts: 1,
 		calendars: 12 ,
 		onRenderCell: function(el,date) {
-			if(setup.disabled.includes(moment(new Date(date)).format("YYYY-MM-DD"))) { 
-				return {'disabled': 1};
+			if(setup.holidays.includes(moment(new Date(date)).format("YYYY-MM-DD"))) { 
+				return {'holiday': 1};
 			}
-			return {'disabled': 0};
+			return {'holiday': 0};
 		},
 		onChange: function(data){
 			updateDB(data);
@@ -111,7 +111,7 @@ function displayCalendarUser() {//{{{
 }
 //}}}
 function displayCalendarAdmin() {//{{{
-	// Calendar for the admin. Admin configures which days users should have disabled.
+	// Calendar for the admin. Admin configures holidays -- the days users should avoid for leaves.
 	$('#multi-calendar').DatePicker({
 		mode: 'multiple',
 		inline: true,

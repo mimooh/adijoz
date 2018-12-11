@@ -228,3 +228,26 @@ fatal, cannot {
 	box-shadow: 0 1px 4px #000;
 }
 
+td.datepickerblock {
+	background: #444;
+}
+
+div.datepicker a {
+  color: #fff;
+  text-decoration: none;
+  cursor: default;
+  outline: none;
+}
+
+div.datepicker td.datepickerSelected a {
+  color: #820;
+  background: #f80;
+}
+
+td.datepickerNotInMonth a {
+  background: #444 !important;
+}
+
+td.datepickerHoliday a {
+  color: #444;
+}
