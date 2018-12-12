@@ -41,7 +41,9 @@ function submit_calendar() { /*{{{*/
 		$date[$key] = $row[0];
 		$type[$key] = $row[1];
 	}
-	array_multisort($date, SORT_ASC,  $collect['leaves']);
+	if(!empty($collect['leaves'])) {  
+		array_multisort($date, SORT_ASC,  $collect['leaves']);
+	}
 	$_SESSION['aa']->query("UPDATE adijoz SET leaves=$1, taken=$2 WHERE year=$3 AND user_id=$4", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['year'],$_SESSION['user_id']));
 	unset($_REQUEST);
 }
