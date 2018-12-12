@@ -46,8 +46,9 @@ function form_limits() { /*{{{*/
 	echo "
 	<form method=post> 
 	<table> 
-	<tr><th>block<help title='".$i18n_meaning_of_block."'></help><th>department<th>name<th colspan=2>".join("<th colspan=2>",$titles);
+	<tr><th>nr<th>block<help title='".$i18n_meaning_of_block."'></help><th>department<th>name<th colspan=2>".join("<th colspan=2>",$titles);
 
+	$ii=1;
 	foreach($_SESSION['aa']->query("SELECT * FROM v WHERE year=$1 ORDER BY department,name", array($_SESSION['year'])) as $r) { 
 		$zeroes=array();
 		foreach(array_keys($titles) as $k) { 
@@ -60,7 +61,8 @@ function form_limits() { /*{{{*/
 		if(empty($taken))      { $taken=$zeroes; }
 		if(empty($r['block'])) { $r['block']=0; }
 
-		echo "<tr><td><input autocomplete=off class=block_$r[block] type=text name=block[$r[user_id]] value='$r[block]' size=1>";
+		echo "<tr><td>$ii";
+		echo "<td><input autocomplete=off class=block_$r[block] type=text name=block[$r[user_id]] value='$r[block]' size=1>";
 		echo "<td>$r[department]";
 		echo "<td><span style='white-space:nowrap'><a class=rlink target=_ href='adijoz.php?id=$r[user_id]'>$r[name] ($r[user_id])</a></span>";
 		$bg="";
@@ -71,6 +73,7 @@ function form_limits() { /*{{{*/
 			echo "<td><input autocomplete=off size=2 value=$i name=collect_limits[$r[user_id]][$k]><td $bg>".$taken[$k];
 			$bg="";
 		}
+		$ii++;
 	}
 
 	echo "
@@ -91,7 +94,9 @@ function submit_calendar() { /*{{{*/
 		$date[$key] = $row[0];
 		$type[$key] = $row[1];
 	}
-	array_multisort($date, SORT_ASC,  $collect['leaves']);
+	if(!empty($collect['leaves'])) {  
+		array_multisort($date, SORT_ASC,  $collect['leaves']);
+	}
 	$_SESSION['aa']->query("UPDATE adijoz SET block=1, leaves=$1, taken=$2 WHERE year=$3 AND user_id=-1", array(json_encode($collect['leaves']), json_encode($collect['taken']), $_SESSION['year']));
 }
 /*}}}*/
@@ -153,7 +158,7 @@ function calendar_submitter() { /*{{{*/
 	extract($_SESSION['i18n']);
 	$submitter='';
 	$submitter.="<input id=adijoz_submit type=submit>";
-	$submitter.="<help title='".$i18n_howto_disabled_days."'></help>";
+	$submitter.="<help title='".$i18n_howto_holidays."'></help>";
 	$submitter.="<br>";
 	return $submitter;
 }
@@ -161,15 +166,15 @@ function calendar_submitter() { /*{{{*/
 function form_calendar() { /*{{{*/
 	$submitter=calendar_submitter();
 	echo "
-	<br><br>&nbsp;
-	".$_SESSION['i18n']['i18n_disabled_from_planning']."
+	<br><br>
 	<form method=post> 
+	".$_SESSION['i18n']['i18n_disabled_from_planning']."
+	$submitter
 	<input type=hidden name=collect id=collect>
 	<div style='display:inline-block'>
 		<div id='multi-calendar' style='float:left'></div>
 	</div>
 	<br><br>
-	$submitter
 	</form>
 	";
 
@@ -257,30 +262,35 @@ function by_departments() { /*{{{*/
 }
 
 /*}}}*/
-head();
 
-if(getenv("ADIJOZ_DISABLE_AUTH")==1) { 
-	#$_SESSION['home_url']=$_SERVER['SCRIPT_NAME'];
-	$_SESSION['user_id']=-1; 
-	$_SESSION['user']='Admin';
-	$_SESSION['adijoz_admin']=1;
-}
-if(empty($_SESSION['adijoz_admin'])) { $_SESSION['aa']->fatal("Not allowed"); }
+function main() { /*{{{*/
+	head();
 
-$_SESSION['aa']->logout_button();
-setup_year();
-assert_years_ok();
-submit_limits();
-submit_calendar();
-db_read();
-menu();
-if(isset($_GET['limits_view'])) { 
-	form_limits();
-	form_calendar();
+	if(getenv("ADIJOZ_DISABLE_AUTH")==1) { 
+		#$_SESSION['home_url']=$_SERVER['SCRIPT_NAME'];
+		$_SESSION['user_id']=-1; 
+		$_SESSION['user']='Admin';
+		$_SESSION['adijoz_admin']=1;
+	}
+	if(empty($_SESSION['adijoz_admin'])) { $_SESSION['aa']->fatal("Not allowed"); }
+
+	$_SESSION['aa']->logout_button();
+	setup_year();
+	assert_years_ok();
+	submit_limits();
+	submit_calendar();
+	db_read();
+	menu();
+	if(isset($_GET['limits_view'])) { 
+		form_limits();
+		form_calendar();
+	}
+	if(isset($_GET['department'])) { 
+		list_departments();
+		by_departments();
+	}
 }
-if(isset($_GET['department'])) { 
-	list_departments();
-	by_departments();
-}
+/*}}}*/
+main();
 
 ?>
