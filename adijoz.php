@@ -23,7 +23,8 @@ function make_year() {/*{{{*/
 		$_SESSION['year']=$_REQUEST['change_year'];
 	} 
 	if(empty($_SESSION['year'])) { 
-		$_SESSION['year']=date('Y');
+		#$_SESSION['year']=date('Y');
+		$_SESSION['year']=2019;
 	}
 
 	echo "
