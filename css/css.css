@@ -115,20 +115,6 @@ label.lradio{
 	opacity: 0.2;
 }
 
-#msg {
-	opacity:0.9;
-    cursor:default;
-	position:absolute;
-	text-align:center;
-	left:10px;
-	top:10px;
-	background-color: #046;
-	display:none;
-	color:#fff;
-	z-index: 10;
-	padding: 30px;
-}
-
 #preview{
 	float: right;
 	margin: 10px;

@@ -57,10 +57,7 @@ $(function() {//{{{
 	$(".lradio").on("click", function(e) {
 		setCurrentType(e);
 	});
-
-	$("body").on("click", "#msg", function(){
-		$('#msg').slideUp();
-	});
+	$('msg').delay(800).fadeOut(2000);
 
 	$("#adijoz_submit").click(function(){
 		var collect={};
