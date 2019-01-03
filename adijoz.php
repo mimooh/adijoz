@@ -130,7 +130,7 @@ function calendar_submitter() {/*{{{*/
 			$submitter.="<br><br>";
 		} else {
 			$submitter.="<div style='display:inline-block'>";
-			$submitter.="<input id=adijoz_submit type=submit>";
+			$submitter.="<input id=adijoz_submit value=$i18n_submit type=submit>";
 			$submitter.="</div><br>";
 		}
 	}
