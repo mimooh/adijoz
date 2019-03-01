@@ -73,7 +73,7 @@ sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw 'adijoz' && {
 #}}}
 # psql#{{{
 sudo -u postgres psql << EOF
-CREATE DATABASE adijoz;
+CREATE DATABASE adijoz WITH ENCODING='UTF8';
 CREATE USER $ADIJOZ_DB_USER WITH PASSWORD '$ADIJOZ_DB_PASS';
 
 \c adijoz;
