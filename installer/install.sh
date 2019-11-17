@@ -135,4 +135,6 @@ echo "Restarting apache..."
 sudo service apache2 restart
 echo;
 echo "You need to configure the leave types in adijoz/conf.json";
+echo "IMPORTANT: you may need to increase max_input_vars in php.ini (/etc/php/7.2/apache2/php.ini?) or you will not process all your users.";
+echo "For say ~500 users Adijoz needs max_input_vars=3000. Inspect your /var/log/apache/error.log.";
 #}}}
