@@ -9,27 +9,30 @@ $_SESSION['aa']=new adijoz();
 
 function dd() {
 	// Just a debugging function
-	echo "<dd>";
-	foreach(func_get_args() as $v) {
-		echo "<pre>";
-		$out=print_r($v,1);
-		echo htmlspecialchars($out);
-		echo "</pre>";
+	if(isset($_SESSION['console'])) { 
+		foreach(func_get_args() as $v) {
+			$out=print_r($v,1);
+			echo $out;
+		}
+		echo "\n";
+	} else {
+		foreach(func_get_args() as $v) {
+			echo "<pre>";
+			$out=print_r($v,1);
+			echo htmlspecialchars($out);
+			echo "</pre>";
+		}
+		echo "<br><br>";
 	}
-	echo "<br><br><br><br>";
-	echo "</dd>";
 }
-function dd2($arr) {
-	$out=print_r($arr,1);
-	echo $out;
-}
-
 /*}}}*/
+
 class adijoz{/*{{{*/
 	// On init we load all messages from messages/en.csv. This way we don't have missing texts in case translations are not complete.
 	// Then messages/$language.csv is loaded to replace some/all en strings.
 	public function __construct(){
 		$language=getenv("ADIJOZ_LANG");
+		if(empty($language)) { $language='en'; }
 		$_SESSION['i18n']=array();
 
 		foreach (file("messages/en.csv") as $row) {                                                                                   
