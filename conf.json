@@ -6,7 +6,8 @@
 [
 	[ "zal"  , "zaległy" ]              ,
 	[ "wyp"  , "wypoczynkowy" ]         ,
-	[ "dod"  , "dodatkowy" ]            
+	[ "dod"  , "dodatkowy" ]            ,
+	[ "nz"  ,  "na.żądanie" ]            
 ]
 
 }
