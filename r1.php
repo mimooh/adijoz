@@ -32,7 +32,7 @@ function by_departments() { /*{{{*/
 	if(empty($_GET['department'])) { return; }
 	each_day_of_year();
 	$_SESSION['each_day_department']=[];
-	foreach($_SESSION['aa']->query("SELECT name,leaves FROM v WHERE department=$1 AND year=$2 ORDER BY name", array($_GET['department'], $_SESSION['year'])) as $r) { 
+	foreach($_SESSION['aa']->query("SELECT name,leaves FROM v WHERE department~$1 AND year=$2 ORDER BY name", array($_GET['department'], $_SESSION['year'])) as $r) { 
 		$leaves=[];
 		$_SESSION['each_day_department'][$r['name']]=$_SESSION['each_day'][$_SESSION['year']];
 		$leaves=json_decode($r['leaves'],1);
