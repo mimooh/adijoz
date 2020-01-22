@@ -21,13 +21,6 @@ function head() { /*{{{*/
 }
 /*}}}*/
 
-function list_departments() {/*{{{*/
-	echo "<br><br><br>By departments:<br>";
-	foreach($_SESSION['aa']->query("SELECT DISTINCT department FROM people ORDER BY department") as $r) { 
-		echo "<a class=blink href=?department=$r[department]>$r[department]</a>";
-	}
-}
-/*}}}*/
 function by_departments() { /*{{{*/
 	if(empty($_GET['department'])) { return; }
 	each_day_of_year();
@@ -58,6 +51,20 @@ function by_departments() { /*{{{*/
 }
 
 /*}}}*/
+function not_empty() { /*{{{*/
+	if(empty($_GET['ne'])) { return; }
+	$z=$_SESSION['aa']->query("SELECT department,name FROM v WHERE leaves is not null and year=$1 ORDER BY department,name", array($_SESSION['year'])); 
+	echo "Lista osób które podały urlopy";
+	echo "<table>";
+	$i=1;
+	foreach($z as $k=>$v) {
+		echo "<tr><td>$i<td>$v[department]<td>$v[name]";
+		$i++;
+	}
+	echo "</table>";
+}
+
+/*}}}*/
 function each_day_of_year() {/*{{{*/
 	if(isset($_SESSION['each_day'][$_SESSION['year']])) { return; }
 	$_SESSION['each_day'][$_SESSION['year']]=array();
@@ -71,9 +78,11 @@ function each_day_of_year() {/*{{{*/
 /*}}}*/
 
 function main() { /*{{{*/
+	if(getenv("ADIJOZ_ALLOW_REPORT_R1")!=1) { die("Reporting without passwords needs to be enabled by adding 'export ADIJOZ_ALLOW_REPORT_R1=1' to /etc/apache2/envvars"); }
+
 	head();
-	list_departments();
 	by_departments();
+	not_empty();
 
 }
 /*}}}*/
