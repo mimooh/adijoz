@@ -54,20 +54,6 @@ function by_departments() { /*{{{*/
 }
 
 /*}}}*/
-function not_empty() { /*{{{*/
-	if(empty($_GET['ne'])) { return; }
-	$z=$_SESSION['aa']->query("SELECT department,name FROM v WHERE leaves is not null and year=$1 ORDER BY department,name", array($_SESSION['year'])); 
-	echo "Lista osób które podały urlopy";
-	echo "<table>";
-	$i=1;
-	foreach($z as $k=>$v) {
-		echo "<tr><td>$i<td>$v[department]<td>$v[name]";
-		$i++;
-	}
-	echo "</table>";
-}
-
-/*}}}*/
 function each_day_of_year() {/*{{{*/
 	if(isset($_SESSION['each_day'][$_SESSION['year']])) { return; }
 	$_SESSION['each_day'][$_SESSION['year']]=array();
@@ -99,13 +85,19 @@ function read_time_off() { #{{{
 	$r=$_SESSION['aa']->query("select user_id,department,name,leaves,limits from v where leaves is not null and year=$1 order by department,name", array($_SESSION['year']));
 	$collect=[];
 	foreach($r as $k=>$v) { 
-		$leaves=json_decode($v['leaves'],1);
+		$leaves=[];
+		foreach(json_decode($v['leaves'],1) as $m=>$n) {
+			if ($n[1] != 'nz') {
+				$leaves[]=$n;
+			}
+		}
+
 		$limits=json_decode($v['limits'],1);
 		$arr=array();
 		$arr['name']=$v['name'];
 		$arr['department']=$v['department'];
-		$arr['sum_user_planned_leaves']=count($leaves);
-		$arr['sum_admin_planned_leaves']=array_sum($limits) - $limits['nz'];
+		$arr['sum_user_planned_leaves']=count($leaves) + $limits['nz'];
+		$arr['sum_admin_planned_leaves']=array_sum($limits); 
 		$arr['admin_planned_leaves']=$limits;
 		$arr['time_off']=array();
 		foreach(array('01' ,'02' ,'03', '04' ,'04' ,'05' ,'06' ,'07' ,'08' ,'09' ,'10' ,'11' ,'12' ) as $mc) { 
@@ -152,12 +144,13 @@ function r2() { #{{{
 
 }
 /*}}}*/
-function r2_to_html($collect) { 
+function r2_to_html($collect) { #{{{
+	$lp=1;
 	echo "<table>";
-	echo "<tr><td>komórka<td>nazwisko i imię<td>zaplanował<td>zal+wyp+dod+nz<td>I<td>II<td>III<td> IV <td>V <td>VI <td>VII <td>VIII <td>IX <td>X <td>XI <td>XII";
-	#echo "<tr><td>komórka<td>nazwisko i imię<td>dodatkowy<td>wypoczynkowy<td>zaległy<td>I<td>II<td>III<td> IV <td>V <td>VI <td>VII <td>VIII <td>IX <td>X <td>XI <td>XII";
+	echo "<tr><td>lp<td>komórka<td>nazwisko i imię<td>zaplanował<td>zal+wyp+dod+nz<td>I<td>II<td>III<td> IV <td>V <td>VI <td>VII <td>VIII <td>IX <td>X <td>XI <td>XII";
 	foreach($collect as $k=>$v) {
-		echo "<tr><td>$v[department]<td style='white-space: nowrap'>$v[name]<td>$v[sum_user_planned_leaves]<td>".
+		if($v['sum_user_planned_leaves'] != $v['sum_admin_planned_leaves']) { $v['sum_user_planned_leaves']="<div style='background-color:red'>$v[sum_user_planned_leaves]</div>"; }
+		echo "<tr><td>$lp<td>$v[department]<td style='white-space: nowrap'>$v[name]<td>$v[sum_user_planned_leaves]<td>".
 		$v['admin_planned_leaves']['zal'].
 		"+".$v['admin_planned_leaves']['wyp'].
 		"+".$v['admin_planned_leaves']['dod'].
@@ -166,16 +159,16 @@ function r2_to_html($collect) {
 		foreach($v['time_off'] as $mc=>$formy) {
 			echo "<td style='text-align:left; white-space: nowrap'>".implode("<br>",$formy);
 		}
+		$lp++;
 	}
 	echo "</table>";
 
 }
-
+/*}}}*/
 function main() { /*{{{*/
 
 	head();
 	by_departments();
-	not_empty();
 	leave_titles();
 	r2();
 
