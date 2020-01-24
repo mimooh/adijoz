@@ -53,6 +53,9 @@ function by_departments() { /*{{{*/
 			echo "<td>".$_SESSION['each_day_department'][$name][$day];
 		}
 	}
+	echo "</table>";
+	echo " <br> <br> <br> <br> <br> ";
+	exit();
 }
 
 /*}}}*/
