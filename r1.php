@@ -1,5 +1,7 @@
 <?php
 
+# This script is probably useless outside of my institution
+
 if(getenv("ADIJOZ_ALLOW_REPORT_R1")!=1) { die("Reporting without passwords needs to be enabled by adding 'export ADIJOZ_ALLOW_REPORT_R1=1' to /etc/apache2/envvars and then restarting apache"); }
 session_name(getenv("ADIJOZ_SESSION_NAME"));
 require_once("inc.php");
@@ -82,7 +84,7 @@ function conf_time_off() { #{{{
 /*}}}*/
 function read_time_off() { #{{{
 	# echo "select * from v" | psql adijoz;
-	$r=$_SESSION['aa']->query("select user_id,department,name,leaves,limits from v where leaves is not null and year=$1 order by department,name", array($_SESSION['year']));
+	$r=$_SESSION['aa']->query("select user_id,department,name,email,stopien,leaves,limits from v where leaves is not null and year=$1 order by department,name", array($_SESSION['year']));
 	$collect=[];
 	foreach($r as $k=>$v) { 
 		$leaves=[];
@@ -95,6 +97,8 @@ function read_time_off() { #{{{
 		$limits=json_decode($v['limits'],1);
 		$arr=array();
 		$arr['name']=$v['name'];
+		$arr['email']=$v['email'];
+		$arr['stopien']=$v['stopien'];
 		$arr['department']=$v['department'];
 		$arr['sum_user_planned_leaves']=count($leaves) + $limits['nz'];
 		$arr['sum_admin_planned_leaves']=array_sum($limits); 
@@ -147,10 +151,15 @@ function r2() { #{{{
 function r2_to_html($collect) { #{{{
 	$lp=1;
 	echo "<table>";
-	echo "<tr><td>lp<td>komórka<td>nazwisko i imię<td>zaplanował<td>zal+wyp+dod+nz<td>I<td>II<td>III<td> IV <td>V <td>VI <td>VII <td>VIII <td>IX <td>X <td>XI <td>XII";
+	echo "<tr><th>lp<th>komórka<th>mundur<th>nazwisko i imię<th>zaplanował<th>zal+wyp+dod+nz<th>I<th>II<th>III<th> IV <th>V <th>VI <th>VII <th>VIII <th>IX <th>X <th>XI <th>XII";
+	$faulty=[];
 	foreach($collect as $k=>$v) {
-		if($v['sum_user_planned_leaves'] != $v['sum_admin_planned_leaves']) { $v['sum_user_planned_leaves']="<div style='background-color:red'>$v[sum_user_planned_leaves]</div>"; }
-		echo "<tr><td>$lp<td>$v[department]<td style='white-space: nowrap'>$v[name]<td>$v[sum_user_planned_leaves]<td>".
+		if($v['sum_user_planned_leaves'] != $v['sum_admin_planned_leaves']) { 
+			$v['sum_user_planned_leaves']="<div style='background-color:red'>$v[sum_user_planned_leaves]</div>"; 
+			$faulty[]=$v['email'];
+		}
+		if(!empty($v['stopien'])) { $funkcjonariusz=1; } else { $funkcjonariusz=0; }
+		echo "<tr><td>$lp<td>$v[department]<td>$funkcjonariusz<td style='white-space: nowrap'>$v[name]<td>$v[sum_user_planned_leaves]<td>".
 		$v['admin_planned_leaves']['zal'].
 		"+".$v['admin_planned_leaves']['wyp'].
 		"+".$v['admin_planned_leaves']['dod'].
@@ -161,7 +170,10 @@ function r2_to_html($collect) { #{{{
 		}
 		$lp++;
 	}
-	echo "</table>";
+	echo "</table><br><br>";
+	echo "Do poprawki:<br><br>";
+	echo implode(", ", $faulty);
+	echo " <br> <br> <br> <br> <br> <br>";
 
 }
 /*}}}*/
