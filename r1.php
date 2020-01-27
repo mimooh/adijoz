@@ -42,13 +42,13 @@ function by_departments() { /*{{{*/
 		}
 	}
 	echo "<table>";
-	echo "<tr><td>date";
+	echo "\n<tr><td>date";
 	$names=array_keys($_SESSION['each_day_department']);
 	foreach($names as $name) { 
 		echo "<td>$name";
 	}
 	foreach(array_keys($_SESSION['each_day'][$_SESSION['year']]) as $day) {
-		echo "<tr><td><span style='white-space:nowrap'>$day</span>";
+		echo "\n<tr><td><span style='white-space:nowrap'>$day</span>";
 		 
 		foreach($names as $name) { 
 			echo "<td>".$_SESSION['each_day_department'][$name][$day];
@@ -155,7 +155,7 @@ function r2() { #{{{
 function r2_to_html($collect) { #{{{
 	$lp=1;
 	echo "<table>";
-	echo "<tr><th>lp<th>komórka<th>mundur<th>nazwisko i imię<th>zaplanował<th>zal+wyp+dod+nz<th>I<th>II<th>III<th> IV <th>V <th>VI <th>VII <th>VIII <th>IX <th>X <th>XI <th>XII";
+	echo "\n<tr><th>lp<th>komórka<th>mundur<th>nazwisko i imię<th>zaplanował<th>zal+wyp+dod+nz<th>I<th>II<th>III<th> IV <th>V <th>VI <th>VII <th>VIII <th>IX <th>X <th>XI <th>XII";
 	$faulty=[];
 	foreach($collect as $k=>$v) {
 		if($v['sum_user_planned_leaves'] != $v['sum_admin_planned_leaves']) { 
@@ -163,7 +163,7 @@ function r2_to_html($collect) { #{{{
 			$faulty[]=$v['email'];
 		}
 		if(!empty($v['stopien'])) { $funkcjonariusz=1; } else { $funkcjonariusz=0; }
-		echo "<tr><td>$lp<td>$v[department]<td>$funkcjonariusz<td style='white-space: nowrap'>$v[name]<td>$v[sum_user_planned_leaves]<td>".
+		echo "\n<tr><td>$lp<td>$v[department]<td>$funkcjonariusz<td style='white-space: nowrap'>$v[name]<td>$v[sum_user_planned_leaves]<td>".
 		$v['admin_planned_leaves']['zal'].
 		"+".$v['admin_planned_leaves']['wyp'].
 		"+".$v['admin_planned_leaves']['dod'].
@@ -190,7 +190,8 @@ function main() { /*{{{*/
 
 }
 /*}}}*/
-stanley_liczy();
-#main();
+
+#stanley_liczy();
+main();
 
 ?>
