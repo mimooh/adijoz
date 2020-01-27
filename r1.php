@@ -5,8 +5,9 @@
 if(getenv("ADIJOZ_ALLOW_REPORT_R1")!=1) { die("Reporting without passwords needs to be enabled by adding 'export ADIJOZ_ALLOW_REPORT_R1=1' to /etc/apache2/envvars and then restarting apache"); }
 session_name(getenv("ADIJOZ_SESSION_NAME"));
 require_once("inc.php");
-$_SESSION['year']=date('Y');
 if(!isset($_SERVER['SERVER_NAME'])) { $_SESSION['console']=1; }
+require_once("r2.php");
+$_SESSION['year']=date('Y');
 
 function head() { /*{{{*/
 	if(isset($_SESSION['console'])) { return; }
@@ -189,6 +190,7 @@ function main() { /*{{{*/
 
 }
 /*}}}*/
-main();
+stanley_liczy();
+#main();
 
 ?>
