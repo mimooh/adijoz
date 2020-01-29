@@ -177,9 +177,17 @@ function r2_to_html($collect) { #{{{
 		$lp++;
 	}
 	echo "</table><br><br>";
-	echo "Do poprawki:<br><br>";
-	echo implode(", ", $faulty);
-	echo " <br> <br> <br> <br> <br> <br>";
+	echo "Wypełnili błędnie:<br><br>";
+	echo implode(",<br>", array_filter($faulty));
+	echo "<br><br><br>Nie wypełnili:<br><br>";
+	$r=$_SESSION['aa']->query("select department,email from v where year=$1 and taken is null and limits!='{\"zal\":\"0\",\"wyp\":\"0\",\"dod\":\"0\",\"nz\":\"0\"}' order by department", array($_SESSION['year']));
+	echo "<table>";
+	$i=0;
+	foreach($r as $v) {
+		echo "<tr><td>$i<td>$v[department]<td>$v[email]";
+		$i++;
+	}
+	echo "</table><br> <br> <br> <br> <br> <br>";
 
 }
 /*}}}*/
