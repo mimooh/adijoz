@@ -1,8 +1,4 @@
 <?php
-
-#$r=$_SESSION['aa']->query("select leaves from adijoz where user_id=-1 and year=2020");
-#dd($r);
-
 function read_wolne() { #{{{
 	$wolne=json_decode('[["2020-01-01","zal"],["2020-01-04","zal"],["2020-01-05","zal"],["2020-01-06","zal"],["2020-01-11","zal"],["2020-01-12","zal"],["2020-01-18","zal"],["2020-01-19","zal"],["2020-01-25","zal"],["2020-01-26","zal"],["2020-02-01","zal"],["2020-02-02","zal"],["2020-02-08","zal"],["2020-02-09","zal"],["2020-02-15","zal"],["2020-02-16","zal"],["2020-02-22","zal"],["2020-02-23","zal"],["2020-02-29","zal"],["2020-03-01","zal"],["2020-03-07","zal"],["2020-03-08","zal"],["2020-03-14","zal"],["2020-03-15","zal"],["2020-03-21","zal"],["2020-03-22","zal"],["2020-03-28","zal"],["2020-03-29","zal"],["2020-04-04","zal"],["2020-04-05","zal"],["2020-04-11","zal"],["2020-04-12","zal"],["2020-04-13","zal"],["2020-04-18","zal"],["2020-04-19","zal"],["2020-04-25","zal"],["2020-04-26","zal"],["2020-05-01","zal"],["2020-05-02","zal"],["2020-05-03","zal"],["2020-05-09","zal"],["2020-05-10","zal"],["2020-05-16","zal"],["2020-05-17","zal"],["2020-05-23","zal"],["2020-05-24","zal"],["2020-05-30","zal"],["2020-05-31","zal"],["2020-06-06","zal"],["2020-06-07","zal"],["2020-06-11","zal"],["2020-06-13","zal"],["2020-06-14","zal"],["2020-06-20","zal"],["2020-06-21","zal"],["2020-06-27","zal"],["2020-06-28","zal"],["2020-07-04","zal"],["2020-07-05","zal"],["2020-07-11","zal"],["2020-07-12","zal"],["2020-07-18","zal"],["2020-07-19","zal"],["2020-07-25","zal"],["2020-07-26","zal"],["2020-08-01","zal"],["2020-08-02","zal"],["2020-08-08","zal"],["2020-08-09","zal"],["2020-08-15","zal"],["2020-08-16","zal"],["2020-08-22","zal"],["2020-08-23","zal"],["2020-08-29","zal"],["2020-08-30","zal"],["2020-09-05","zal"],["2020-09-06","zal"],["2020-09-12","zal"],["2020-09-13","zal"],["2020-09-19","zal"],["2020-09-20","zal"],["2020-09-26","zal"],["2020-09-27","zal"],["2020-10-03","zal"],["2020-10-04","zal"],["2020-10-10","zal"],["2020-10-11","zal"],["2020-10-17","zal"],["2020-10-18","zal"],["2020-10-24","zal"],["2020-10-25","zal"],["2020-10-31","zal"],["2020-11-01","zal"],["2020-11-07","zal"],["2020-11-08","zal"],["2020-11-11","zal"],["2020-11-14","zal"],["2020-11-15","zal"],["2020-11-21","zal"],["2020-11-22","zal"],["2020-11-28","zal"],["2020-11-29","zal"],["2020-12-05","zal"],["2020-12-06","zal"],["2020-12-12","zal"],["2020-12-13","zal"],["2020-12-19","zal"],["2020-12-20","zal"],["2020-12-25","zal"],["2020-12-26","zal"],["2020-12-27","zal"]]',1);
 	return $wolne;
@@ -128,9 +124,10 @@ function wolne(){/*{{{*/
 	);
 	return($wolne);
 }/*}}}*/
-function fill_year(){//tworzy os czasu dni zaplanowane + dni wolne od pracy (sobota niedziela, swieta)/*{{{*/
+function fill_year($kto){//tworzy os czasu dni zaplanowane + dni wolne od pracy (sobota niedziela, swieta)/*{{{*/
 	$wolne=read_wolne(); 
-	$kto=read_stanley(); //dni zaplanowane pracownika
+	#$kto=read_stanley(); //dni zaplanowane pracownika
+	$kto=$_SESSION['collect'][$kto];
 	$time_line=rok(); //wszystkie dni w roku
 	foreach($kto['time_off'] as $k_mon=>$v){ //wstawienie zaplanowanych dni pracownika na os czasu
 		foreach($v as $type=>$val){
@@ -154,22 +151,20 @@ function remove_holiday_at_end($temp_table){/*{{{*/
 		return($temp_table);
 }/*}}}*/
 function make_con_table($new_temp, $count){ //dodaj temp table do duzej listy/*{{{*/
-			#echo "Koniec serii $count dni planowanych \n";
-			$keys=array_keys($new_temp);
-			$from_array=explode("_",reset($keys));
-			$from=$from_array[1].".".$from_array[0];	
-			$to_array=explode("_",end($keys));
-			$to=$to_array[1].".".$to_array[0];	
-			$ret=array('from'=>$from,'to'=>$to,'count'=>$count);
-			return($ret);
+	$keys=array_keys($new_temp);
+	$from_array=explode("_",reset($keys));
+	$from=$from_array[1].".".$from_array[0];	
+	$to_array=explode("_",end($keys));
+	$to=$to_array[1].".".$to_array[0];	
+	$ret=array('from'=>$from,'to'=>$to,'count'=>$count);
+	return($ret);
 }/*}}}*/
 function find_continuity($time_line){/*{{{*/
-	global $con_table,$limit;
-	#print_r($time_line);
+	$con_table=[];//pusta tabela na znalezione zakresy dni
 	$temp_table=[];
 	$found=0;
 	$count=0;//liczba dni zaplanowanych w serii
-	$limit=10;
+	$limit_gruszy=10;
 	$juz_zaplanowanych=0;
 	foreach($time_line as $date=>$type){
 		if(!empty($type)and $type!='wol' ){ //znalazlem poczatek serii - nie zaczynamy od dnia wolnego
@@ -177,19 +172,17 @@ function find_continuity($time_line){/*{{{*/
 			$temp_table[$date]=$type;
 			$count++;//liczba dni zaplanowanych w serii
 			$juz_zaplanowanych++;
-			if($juz_zaplanowanych==$limit){
+			if($juz_zaplanowanych==$limit_gruszy){
 				$d=explode("_",$date);
-				$limit="Osiagnieto limit $limit dni w  ".$d[1].".".$d[0].".2020\n";
+				$con_table['grusza_limit']="Osiagnieto limit $limit_gruszy dni w ".$d[1].".".$d[0].".2020\n";
 				}
 		}
 		if(!empty($type) and $found==1){ //znalazłem kolejny wpis w serii
 			$temp_table[$date]=$type;
 		}
 		if(empty($type) and $found==1){ //ten wpis juz nie w serii
-#			echo "Koniec serii $count dni planowanych \n";
-#			print_r($temp_table);
 			$new_temp=remove_holiday_at_end($temp_table); //usun z konca dni swiateczne
-			$con_table[]=make_con_table($new_temp, $count);//dodaj znaleziona serie do duzej listy
+			$con_table['zakresy'][]=make_con_table($new_temp, $count);//dodaj znaleziona serie do duzej listy
 			$count=0;
 			$found=0;
 			$temp_table=[];
@@ -198,24 +191,20 @@ function find_continuity($time_line){/*{{{*/
 	return($con_table);	
 }/*}}}*/
 function find_first_long($con_table){/*{{{*/
-	$limit=10;
-	foreach ($con_table as $k=>$v){
-			if( $con_table[$k]['count']>=$limit){
-				$dlugi_urlop="Długi urlop długości min $limit zaplanowano od ".$con_table[$k]['from']." do ".$con_table[$k]['to']."\n";
+	$long_limit=10;
+	foreach ($con_table['zakresy'] as $k=>$v){
+			if( $con_table['zakresy'][$k]['count']>=$long_limit){
+				$dlugi_urlop="Długi urlop długości min $long_limit zaplanowano od ".$con_table['zakresy'][$k]['from']." do ".$con_table['zakresy'][$k]['to']."\n";
 				return($dlugi_urlop);
 			}
 	}
 }/*}}}*/
-
-global $limit;
-function stanley_liczy() { #{{{
-	$con_table=[];//empty table 
-	$time_line=fill_year();
+function stanley_liczy($z_r1) { #{{{
+	$time_line=fill_year($z_r1);
 	$con_table=find_continuity($time_line);
-	$dlugi_urlop= find_first_long($con_table);
-	echo $dlugi_urlop;
-	echo $limit;
+	$con_table['dlugi_urlop']= find_first_long($con_table);
 	print_r($con_table);
+	return($con_table);
 }
 /*}}}*/
 ?>

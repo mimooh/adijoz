@@ -155,7 +155,7 @@ function r2() { #{{{
 function r2_to_html($collect) { #{{{
 	$lp=1;
 	echo "<table>";
-	echo "\n<tr><th>lp<th>komórka<th>mundur<th>nazwisko i imię<th>zaplanował<th>zal+wyp+dod+nz<th>I<th>II<th>III<th> IV <th>V <th>VI <th>VII <th>VIII <th>IX <th>X <th>XI <th>XII";
+	echo "\n<tr><th>lp<th>komórka<th>mundur<th>nazwisko i imię<th>zaplanował<th>zal+wyp+dod+nz<th>I<th>II<th>III<th> IV <th>V <th>VI <th>VII <th>VIII <th>IX <th>X <th>XI <th>XII<th>stanley";
 	$faulty=[];
 	foreach($collect as $k=>$v) {
 		if($v['sum_user_planned_leaves'] != $v['sum_admin_planned_leaves']) { 
@@ -172,6 +172,8 @@ function r2_to_html($collect) { #{{{
 		foreach($v['time_off'] as $mc=>$formy) {
 			echo "<td style='text-align:left; white-space: nowrap'>".implode("<br>",$formy);
 		}
+		echo "<td style='text-align:left; white-space: nowrap'>&nbsp;";
+		#$stanley=stanley_liczy($k);
 		$lp++;
 	}
 	echo "</table><br><br>";
@@ -182,16 +184,15 @@ function r2_to_html($collect) { #{{{
 }
 /*}}}*/
 function main() { /*{{{*/
-
 	head();
 	by_departments();
 	leave_titles();
+	#read_time_off(); //stanley - do usuniecia
+	#stanley_liczy(30);
+	#exit();
 	r2();
-
 }
 /*}}}*/
-
-#stanley_liczy();
 main();
 
 ?>
