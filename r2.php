@@ -163,6 +163,7 @@ function make_con_table($new_temp, $count){ //dodaj temp table do duzej listy/*{
 }/*}}}*/
 function find_continuity($time_line){/*{{{*/
 	$con_table=[];//pusta tabela na znalezione zakresy dni
+	$con_table['zakresy']=[];
 	$temp_table=[];
 	$found=0;
 	$count=0;//liczba dni zaplanowanych w serii
