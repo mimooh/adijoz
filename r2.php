@@ -1,4 +1,6 @@
 <?php
+
+$_SESSION['grusza_errors']=[];
 function read_wolne() { #{{{
 	$wolne=json_decode('[["2020-01-01","zal"],["2020-01-04","zal"],["2020-01-05","zal"],["2020-01-06","zal"],["2020-01-11","zal"],["2020-01-12","zal"],["2020-01-18","zal"],["2020-01-19","zal"],["2020-01-25","zal"],["2020-01-26","zal"],["2020-02-01","zal"],["2020-02-02","zal"],["2020-02-08","zal"],["2020-02-09","zal"],["2020-02-15","zal"],["2020-02-16","zal"],["2020-02-22","zal"],["2020-02-23","zal"],["2020-02-29","zal"],["2020-03-01","zal"],["2020-03-07","zal"],["2020-03-08","zal"],["2020-03-14","zal"],["2020-03-15","zal"],["2020-03-21","zal"],["2020-03-22","zal"],["2020-03-28","zal"],["2020-03-29","zal"],["2020-04-04","zal"],["2020-04-05","zal"],["2020-04-11","zal"],["2020-04-12","zal"],["2020-04-13","zal"],["2020-04-18","zal"],["2020-04-19","zal"],["2020-04-25","zal"],["2020-04-26","zal"],["2020-05-01","zal"],["2020-05-02","zal"],["2020-05-03","zal"],["2020-05-09","zal"],["2020-05-10","zal"],["2020-05-16","zal"],["2020-05-17","zal"],["2020-05-23","zal"],["2020-05-24","zal"],["2020-05-30","zal"],["2020-05-31","zal"],["2020-06-06","zal"],["2020-06-07","zal"],["2020-06-11","zal"],["2020-06-13","zal"],["2020-06-14","zal"],["2020-06-20","zal"],["2020-06-21","zal"],["2020-06-27","zal"],["2020-06-28","zal"],["2020-07-04","zal"],["2020-07-05","zal"],["2020-07-11","zal"],["2020-07-12","zal"],["2020-07-18","zal"],["2020-07-19","zal"],["2020-07-25","zal"],["2020-07-26","zal"],["2020-08-01","zal"],["2020-08-02","zal"],["2020-08-08","zal"],["2020-08-09","zal"],["2020-08-15","zal"],["2020-08-16","zal"],["2020-08-22","zal"],["2020-08-23","zal"],["2020-08-29","zal"],["2020-08-30","zal"],["2020-09-05","zal"],["2020-09-06","zal"],["2020-09-12","zal"],["2020-09-13","zal"],["2020-09-19","zal"],["2020-09-20","zal"],["2020-09-26","zal"],["2020-09-27","zal"],["2020-10-03","zal"],["2020-10-04","zal"],["2020-10-10","zal"],["2020-10-11","zal"],["2020-10-17","zal"],["2020-10-18","zal"],["2020-10-24","zal"],["2020-10-25","zal"],["2020-10-31","zal"],["2020-11-01","zal"],["2020-11-07","zal"],["2020-11-08","zal"],["2020-11-11","zal"],["2020-11-14","zal"],["2020-11-15","zal"],["2020-11-21","zal"],["2020-11-22","zal"],["2020-11-28","zal"],["2020-11-29","zal"],["2020-12-05","zal"],["2020-12-06","zal"],["2020-12-12","zal"],["2020-12-13","zal"],["2020-12-19","zal"],["2020-12-20","zal"],["2020-12-25","zal"],["2020-12-26","zal"],["2020-12-27","zal"]]',1);
 	return $wolne;
@@ -174,8 +176,8 @@ function find_continuity($time_line){/*{{{*/
 			$juz_zaplanowanych++;
 			if($juz_zaplanowanych==$limit_gruszy){
 				$d=explode("_",$date);
-				$con_table['grusza_limit']="Osiagnieto limit $limit_gruszy dni w ".$d[1].".".$d[0].".2020\n";
-				}
+				$con_table['grusza_limit']="Osiągnięto limit $limit_gruszy dni w ".$d[1].".".$d[0].".2020";
+			}
 		}
 		if(!empty($type) and $found==1){ //znalazłem kolejny wpis w serii
 			$temp_table[$date]=$type;
@@ -194,7 +196,7 @@ function find_first_long($con_table){/*{{{*/
 	$long_limit=10;
 	foreach ($con_table['zakresy'] as $k=>$v){
 			if( $con_table['zakresy'][$k]['count']>=$long_limit){
-				$dlugi_urlop="Długi urlop długości min $long_limit zaplanowano od ".$con_table['zakresy'][$k]['from']." do ".$con_table['zakresy'][$k]['to']."\n";
+				$dlugi_urlop="Długi urlop długości min $long_limit zaplanowano od ".$con_table['zakresy'][$k]['from']." do ".$con_table['zakresy'][$k]['to'];
 				return($dlugi_urlop);
 			}
 	}
@@ -203,8 +205,23 @@ function stanley_liczy($z_r1) { #{{{
 	$time_line=fill_year($z_r1);
 	$con_table=find_continuity($time_line);
 	$con_table['dlugi_urlop']= find_first_long($con_table);
-	print_r($con_table);
-	return($con_table);
+	$html='';
+	$xls='';
+	foreach($con_table['zakresy']  as $v) {
+		$html.="$v[from] - $v[to] ($v[count])<br>";
+		$xls.="$v[from] - $v[to] ($v[count])\n";
+	}
+	if(!empty($con_table['dlugi_urlop'])) { 
+		$html.="$con_table[grusza_limit]<br>";  
+		$html.="$con_table[dlugi_urlop]";  
+		$xls.="$con_table[grusza_limit]\n";  
+		$xls.="$con_table[dlugi_urlop]";  
+	} else {
+		$r=$_SESSION['aa']->query("select name from v where user_id=$1", array($z_r1));
+		$_SESSION['grusza_errors'][]=$r[0]['name'];
+	}
+
+	return array('xls'=>$xls, 'html'=>$html);
 }
 /*}}}*/
 ?>

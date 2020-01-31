@@ -1,7 +1,7 @@
 <?php
 
 # This script is probably useless outside of my institution
-
+require_once("/home/svn/svn_mimooh/systems/xlsphp/xlsphp.php");
 if(getenv("ADIJOZ_ALLOW_REPORT_R1")!=1) { die("Reporting without passwords needs to be enabled by adding 'export ADIJOZ_ALLOW_REPORT_R1=1' to /etc/apache2/envvars and then restarting apache"); }
 session_name(getenv("ADIJOZ_SESSION_NAME"));
 require_once("inc.php");
@@ -124,17 +124,9 @@ function read_time_off() { #{{{
 	$_SESSION['collect']=$collect;
 }
 /*}}}*/
-function r2() { #{{{
-# NAZWISKO          , IMIĘ      , dodatkowy , wypoczynkowy , zaległy , department , I , II , III , IV , V , VI , VII , VIII , IX , X , XI , XII
-# FLISZKIEWICZ      , MATEUSZ   , 10        , 26           , 3       , RN-P/4/1   ,   ,    ,     ,    ,   ,    ,     ,      ,    ,   ,    ,
-# KRAUZE            , ANDRZEJ   , 13        , 26           , 0       , RN-P/4/1   ,   ,    ,     ,    ,   ,    ,     ,      ,    ,   ,    ,
-# KREŃSKI           , KAROL     , 13        , 26           , 0       , RN-P/4/1   ,   ,    ,     ,    ,   ,    ,     ,      ,    ,   ,    ,
-# ŁAZOWY            , STANISŁAW , 13        , 26           , 6       , RN-P/4/1   ,   ,    ,     ,    ,   ,    ,     ,      ,    ,   ,    ,
-# WĘSIERSKI         , TOMASZ    , 5         , 26           , 2       , RN-P/4/2   ,   ,    ,     ,    ,   ,    ,     ,      ,    ,   ,    ,
-
+function r2($xls=0) { #{{{
 	read_time_off();
 	$new=[];
-	#dd($_SESSION['collect']);
 	foreach($_SESSION['collect'] as $id=>$data) { 
 		$new[$id]=$data;
 		$new[$id]['time_off']=array();
@@ -148,14 +140,19 @@ function r2() { #{{{
 			}
 		}
 	}
-	r2_to_html($new);
+	if($xls==1) { 
+		return r2_to_xls($new);
+	} else { 
+		return r2_to_html($new);
+	}
 
 }
 /*}}}*/
 function r2_to_html($collect) { #{{{
 	$lp=1;
-	echo "<table>";
-	echo "\n<tr><th>lp<th>komórka<th>mundur<th>nazwisko i imię<th>zaplanował<th>zal+wyp+dod+nz<th>I<th>II<th>III<th> IV <th>V <th>VI <th>VII <th>VIII <th>IX <th>X <th>XI <th>XII<th>stanley";
+	$html='';
+	$html.="<table>";
+	$html.="\n<tr><th>lp<th>komórka<th>mundur<th>nazwisko i imię<th>zaplanował<th>zal+wyp+dod+nz<th>I<th>II<th>III<th> IV <th>V <th>VI <th>VII <th>VIII <th>IX <th>X <th>XI <th>XII<th>podsumowanie";
 	$faulty=[];
 	foreach($collect as $k=>$v) {
 		if($v['sum_user_planned_leaves'] != $v['sum_admin_planned_leaves']) { 
@@ -163,42 +160,63 @@ function r2_to_html($collect) { #{{{
 			$faulty[]=$v['email'];
 		}
 		if(!empty($v['stopien'])) { $funkcjonariusz=1; } else { $funkcjonariusz=0; }
-		echo "\n<tr><td>$lp<td>$v[department]<td>$funkcjonariusz<td style='white-space: nowrap'>$v[name]<td>$v[sum_user_planned_leaves]<td>".
+		$html.="\n<tr><td>$lp<td>$v[department]<td>$funkcjonariusz<td style='white-space: nowrap'>$v[name]<td>$v[sum_user_planned_leaves]<td>".
 		$v['admin_planned_leaves']['zal'].
 		"+".$v['admin_planned_leaves']['wyp'].
 		"+".$v['admin_planned_leaves']['dod'].
 		"+".$v['admin_planned_leaves']['nz'].
 		"=".$v['sum_admin_planned_leaves'];
 		foreach($v['time_off'] as $mc=>$formy) {
-			echo "<td style='text-align:left; white-space: nowrap'>".implode("<br>",$formy);
+			$html.="<td style='text-align:left; white-space: nowrap'>".implode("<br>",$formy);
 		}
-		echo "<td style='text-align:left; white-space: nowrap'>&nbsp;";
-		#$stanley=stanley_liczy($k);
+		$html.="<td style='text-align:left; white-space: nowrap'>";
+		$stanley=stanley_liczy($k);
+		$html.=$stanley['html'];
+		#dd($stanley['raw']);
 		$lp++;
 	}
-	echo "</table><br><br>";
-	echo "Wypełnili błędnie:<br><br>";
-	echo implode(",<br>", array_filter($faulty));
-	echo "<br><br><br>Nie wypełnili:<br><br>";
+	$html.="</table><br><br>";
+	$html.="Wypełnili błędnie:<br><br>";
+	$html.=implode(",<br>", array_filter($faulty));
+	$html.="<br><br><br>Nie wypełnili:<br><br>";
 	$r=$_SESSION['aa']->query("select department,email from v where year=$1 and taken is null and limits!='{\"zal\":\"0\",\"wyp\":\"0\",\"dod\":\"0\",\"nz\":\"0\"}' order by department", array($_SESSION['year']));
-	echo "<table>";
+	$html.="<table>";
 	$i=0;
 	foreach($r as $v) {
-		echo "<tr><td>$i<td>$v[department]<td>$v[email]";
+		$html.="<tr><td>$i<td>$v[department]<td>$v[email]";
 		$i++;
 	}
-	echo "</table><br> <br> <br> <br> <br> <br>";
+	$html.="</table><br> ";
+	return $html;
 
 }
 /*}}}*/
+function r2_to_xls($collect) { #{{{
+	$lp=1;
+	$data=[];
+	$data[]=array('komórka','mundur','nazwisko i imię','zaplanował','zal', 'wyp', 'dod', 'nz', 'powinien', 'I','II','III',' IV ','V ','VI ','VII ','VIII ','IX ','X ','XI ','XII','podsumowanie');
+	foreach($collect as $k=>$v) {
+		if(!empty($v['stopien'])) { $funkcjonariusz=1; } else { $funkcjonariusz=0; }
+		$out=array($v['department'], $funkcjonariusz, $v['name'], $v['sum_user_planned_leaves'], $v['admin_planned_leaves']['zal'], $v['admin_planned_leaves']['wyp'], $v['admin_planned_leaves']['dod'], $v['admin_planned_leaves']['nz'], $v['sum_admin_planned_leaves']);
+		foreach($v['time_off'] as $mc=>$formy) {
+			$out[]=implode("\n", $formy);
+		}
+		$out[]=stanley_liczy($k)['xls'];
+		$data[]=$out;
+	}
+	return $data;
+}
+/*}}}*/
 function main() { /*{{{*/
+	if(isset($_GET['xls'])) { $data=r2($xls=1); xls($data, "sonda.xlsx"); exit(); }
 	head();
 	by_departments();
 	leave_titles();
 	#read_time_off(); //stanley - do usuniecia
 	#stanley_liczy(30);
 	#exit();
-	r2();
+	echo r2();
+	dd("Błędy pod gruszą", $_SESSION['grusza_errors']);
 }
 /*}}}*/
 main();
