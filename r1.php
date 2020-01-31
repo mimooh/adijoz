@@ -208,10 +208,10 @@ function r2_to_xls($collect) { #{{{
 }
 /*}}}*/
 function main() { /*{{{*/
+	leave_titles();
 	if(isset($_GET['xls'])) { $data=r2($xls=1); xls($data, "sonda.xlsx"); exit(); }
 	head();
 	by_departments();
-	leave_titles();
 	#read_time_off(); //stanley - do usuniecia
 	#stanley_liczy(30);
 	#exit();
