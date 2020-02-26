@@ -117,7 +117,7 @@ function read_time_off() { #{{{
 		foreach($leaves as $ll) {
 			$date=explode('-', $ll[0]);
 			$title=$ll[1];
-			$arr['time_off'][$date[1]][$title][]=intval($date[2]);
+			$arr['time_off'][$date[1]][$title][]=$date[2];
 		}
 		$collect[$v['user_id']]=$arr;
 	}
@@ -208,12 +208,12 @@ function r2_to_xls($collect) { #{{{
 }
 /*}}}*/
 function main() { /*{{{*/
+	# echo "select leaves from adijoz where user_id=716" | psql adijoz
 	leave_titles();
 	if(isset($_GET['xls'])) { $data=r2($xls=1); xls($data, "sonda.xlsx"); exit(); }
 	head();
 	by_departments();
 	#read_time_off(); //stanley - do usuniecia
-	#stanley_liczy(30);
 	#exit();
 	echo r2();
 	dd("Błędy pod gruszą", $_SESSION['grusza_errors']);
