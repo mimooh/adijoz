@@ -5,12 +5,12 @@ require_once("/home/svn/svn_mimooh/systems/xlsphp/xlsphp.php");
 if(getenv("ADIJOZ_ALLOW_REPORT_R1")!=1) { die("Reporting without passwords needs to be enabled by adding 'export ADIJOZ_ALLOW_REPORT_R1=1' to /etc/apache2/envvars and then restarting apache"); }
 session_name(getenv("ADIJOZ_SESSION_NAME"));
 require_once("inc.php");
-if(!isset($_SERVER['SERVER_NAME'])) { $_SESSION['console']=1; }
+if(!isset($_SERVER['SERVER_NAME'])) { $_SESSION['console']=1; } else { $_SESSION['console']=0; }
 require_once("r2.php");
 $_SESSION['year']=date('Y');
 
 function head() { /*{{{*/
-	if(isset($_SESSION['console'])) { return; }
+	if($_SESSION['console']==1) { return; }
 	echo "
 <HTML><HEAD>
 <META http-equiv=Content-Type content='text/html; charset=utf-8' />

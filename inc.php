@@ -9,7 +9,7 @@ $_SESSION['aa']=new adijoz();
 
 function dd() {
 	// Just a debugging function
-	if(isset($_SESSION['console'])) { 
+	if($_SESSION['console']==1) { 
 		foreach(func_get_args() as $v) {
 			$out=print_r($v,1);
 			echo $out;
@@ -34,6 +34,7 @@ class adijoz{/*{{{*/
 		$language=getenv("ADIJOZ_LANG");
 		if(empty($language)) { $language='en'; }
 		$_SESSION['i18n']=array();
+		$_SESSION['console']=0;
 
 		foreach (file("messages/en.csv") as $row) {                                                                                   
 			$x=explode(";", $row);
