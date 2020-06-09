@@ -5,7 +5,7 @@ require_once("/home/svn/svn_mimooh/systems/xlsphp/xlsphp.php");
 if(getenv("ADIJOZ_ALLOW_REPORT_R1")!=1) { die("Reporting without passwords needs to be enabled by adding 'export ADIJOZ_ALLOW_REPORT_R1=1' to /etc/apache2/envvars and then restarting apache"); }
 session_name(getenv("ADIJOZ_SESSION_NAME"));
 require_once("inc.php");
-if(!isset($_SERVER['SERVER_NAME'])) { $_SESSION['console']=1; }
+if(!isset($_SERVER['SERVER_NAME'])) { $_SESSION['console']=1; } else { $_SESSION['console']=0; }
 require_once("r2.php");
 $_SESSION['year']=date('Y');
 
@@ -117,7 +117,7 @@ function read_time_off() { #{{{
 		foreach($leaves as $ll) {
 			$date=explode('-', $ll[0]);
 			$title=$ll[1];
-			$arr['time_off'][$date[1]][$title][]=intval($date[2]);
+			$arr['time_off'][$date[1]][$title][]=$date[2];
 		}
 		$collect[$v['user_id']]=$arr;
 	}
@@ -208,12 +208,12 @@ function r2_to_xls($collect) { #{{{
 }
 /*}}}*/
 function main() { /*{{{*/
+	# echo "select leaves from adijoz where user_id=716" | psql adijoz
+	leave_titles();
 	if(isset($_GET['xls'])) { $data=r2($xls=1); xls($data, "sonda.xlsx"); exit(); }
 	head();
 	by_departments();
-	leave_titles();
 	#read_time_off(); //stanley - do usuniecia
-	#stanley_liczy(30);
 	#exit();
 	echo r2();
 	dd("Błędy pod gruszą", $_SESSION['grusza_errors']);
