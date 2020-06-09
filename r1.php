@@ -10,7 +10,7 @@ require_once("r2.php");
 $_SESSION['year']=date('Y');
 
 function head() { /*{{{*/
-	if(isset($_SESSION['console'])) { return; }
+	if($_SESSION['console']==1) { return; }
 	echo "
 <HTML><HEAD>
 <META http-equiv=Content-Type content='text/html; charset=utf-8' />
