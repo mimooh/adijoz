@@ -2,6 +2,9 @@
 session_name(getenv("ADIJOZ_SESSION_NAME"));
 require_once("inc.php");
 
+# echo "select * from v where year=2021" | psql adijoz
+# echo "update adijoz set limits='{\"zal\":0,\"wyp\":24,\"dod\":15,\"nz\":0}' where year=2021" | psql adijoz
+
 function head() { /*{{{*/
 	echo "
 <HTML><HEAD>
@@ -23,8 +26,8 @@ function make_year() {/*{{{*/
 		$_SESSION['year']=$_REQUEST['change_year'];
 	} 
 	if(empty($_SESSION['year'])) { 
-		$_SESSION['year']=date('Y');
-		#$_SESSION['year']=2019;
+		#$_SESSION['year']=date('Y');
+		$_SESSION['year']=2021;
 	}
 
 	echo "
