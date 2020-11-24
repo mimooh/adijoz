@@ -7,7 +7,7 @@ session_name(getenv("ADIJOZ_SESSION_NAME"));
 require_once("inc.php");
 if(!isset($_SERVER['SERVER_NAME'])) { $_SESSION['console']=1; } else { $_SESSION['console']=0; }
 require_once("r2.php");
-$_SESSION['year']=date('Y');
+$_SESSION['year']=date('2021');
 
 function head() { /*{{{*/
 	if($_SESSION['console']==1) { return; }
