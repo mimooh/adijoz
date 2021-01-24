@@ -5,7 +5,8 @@
 ADIJOZ_DB_USER='adijoz'  
 ADIJOZ_DB_PASS='secret'  
 ADIJOZ_SESSION_NAME='adijoz'
-ADIJOZ_LANG="en"	
+ADIJOZ_LANG='en'	
+ADIJOZ_LOGOUT_BUTTON=''
 
 # Your email for DB failure notificatins, etc.
 ADIJOZ_NOTIFY="user@gmail.com"  
@@ -45,6 +46,7 @@ echo "export ADIJOZ_SESSION_NAME='$ADIJOZ_SESSION_NAME'" >> $temp
 echo "export ADIJOZ_LANG='$ADIJOZ_LANG'" >> $temp
 echo "export ADIJOZ_NOTIFY='$ADIJOZ_NOTIFY'" >> $temp
 echo "export ADIJOZ_DISABLE_AUTH='$ADIJOZ_DISABLE_AUTH'" >> $temp
+echo "export ADIJOZ_LOGOUT_BUTTON='$ADIJOZ_LOGOUT_BUTTON'" >> $temp
 
 sudo cp $temp /etc/apache2/envvars
 rm $temp
