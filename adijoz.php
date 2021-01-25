@@ -176,12 +176,12 @@ if(getenv("ADIJOZ_DISABLE_AUTH")==1) {
 
 }
 if(empty($_SESSION['user_id'])) { $_SESSION['aa']->fatal("Not allowed"); }
-$_SESSION['aa']->logout_button();
 make_year();
 admin_change_user();
 submit_calendar();
-form_year();
 db_read();
+$_SESSION['aa']->logout_button();
+form_year();
 form_calendar();
 
 ?>
