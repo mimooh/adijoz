@@ -4,10 +4,11 @@
 
 "leave_titles": 
 [
-	[ "zal"  , "zaległy" ]              ,
-	[ "wyp"  , "wypoczynkowy" ]         ,
-	[ "dod"  , "dodatkowy" ]            ,
-	[ "nz"  ,  "na.żądanie" ]            
+	[ "zal.wyp" , "zaległy.wypocz." ] ,
+	[ "zal.dod" , "zaległy.dodatk." ] ,
+	[ "wyp"     , "wypoczynkowy" ]    ,
+	[ "dod"     , "dodatkowy" ]       ,
+	[ "nz"      , "na.żądanie" ]
 ]
 
 }

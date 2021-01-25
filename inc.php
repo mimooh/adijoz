@@ -63,7 +63,9 @@ class adijoz{/*{{{*/
 /*}}}*/
 	public function logout_button() {/*{{{*/
 		if(!empty(getenv("ADIJOZ_LOGOUT_BUTTON"))) { 
-			echo "<div style='float:right'><a href=?logout class=rlink>$_SESSION[user]</a>".getenv("ADIJOZ_LOGOUT_BUTTON")."</div>"; 
+			$limits=$_SESSION['setup']['summary']['limits'];
+			$sum=implode("+", $limits)."=". array_sum($limits);
+			echo "<div style='float:right'>$_SESSION[user] <green>$sum</green>".getenv("ADIJOZ_LOGOUT_BUTTON")."</div>"; 
 			return;
 		}
 		if(!isset($_GET['logout'])) { 

@@ -233,6 +233,11 @@ div.datepicker td.datepickerSelected a {
 td.datepickerNotInMonth a {
   background: #444 !important;
 }
+green {
+	background-color: #285;
+	padding: 5px;
+	color: #111;
+}
 
 td.datepickerHoliday a {
   color: #444;
