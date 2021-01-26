@@ -2,7 +2,6 @@
 
 #  =================  START OF CONFIGURATION  ===============
 
-ADIJOZ_DB='adijoz'  
 ADIJOZ_DB_USER='adijoz'  
 ADIJOZ_DB_PASS='secret'  
 ADIJOZ_SESSION_NAME='adijoz'
@@ -11,6 +10,11 @@ ADIJOZ_LOGOUT_BUTTON=''
 
 # Your email for DB failure notificatins, etc.
 ADIJOZ_NOTIFY="user@gmail.com"  
+
+# This variable is for the installer only, not for the environment.
+# If you need to change the database name (e.g. to have two parallel instances)
+# check inc.php query() function for how we setup $db via a file.
+ADIJOZ_DB='adijoz'  
 
 # Adijoz is meant to be integrated with a separate authentication form. By
 # default ADIJOZ_DISABLE_AUTH is ON, which lets you test the system, but allows
@@ -41,7 +45,6 @@ USER=`id -ru`
 # www-data user needs ADIJOZ_DB vars. They are kept in www-data environment: /etc/apache2/envvars #{{{
 temp=`mktemp`
 sudo cat /etc/apache2/envvars | grep -v ADIJOZ_  > $temp
-echo "export ADIJOZ_DB='$ADIJOZ_DB'" >> $temp
 echo "export ADIJOZ_DB_USER='$ADIJOZ_DB_USER'" >> $temp
 echo "export ADIJOZ_DB_PASS='$ADIJOZ_DB_PASS'" >> $temp
 echo "export ADIJOZ_SESSION_NAME='$ADIJOZ_SESSION_NAME'" >> $temp
