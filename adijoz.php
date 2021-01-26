@@ -115,6 +115,7 @@ function db_read() {/*{{{*/
 }
 /*}}}*/
 function calendar_submitter() {/*{{{*/
+	// $_GET['adijoz_plain_user'] allows an admin user in the institution to act as a plain user and plan his own vacation.
 	extract($_SESSION['i18n']);
 
 	$titles='';
@@ -125,7 +126,9 @@ function calendar_submitter() {/*{{{*/
 	$block=$_SESSION['aa']->query("SELECT block FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']))[0]['block'];
 
 	$submitter='';
-	if(empty($_SESSION['adijoz_admin'])) { 
+
+
+	if(empty($_SESSION['adijoz_admin']) || isset($_GET['adijoz_plain_user'])) { 
 		$submitter="<table style='width:1px'> <tr> <th>$i18n_I_am_planning<th> $titles </table>";
 		if($block==1) { 
 			$submitter.="Blocked";
