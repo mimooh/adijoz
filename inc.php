@@ -112,8 +112,8 @@ class adijoz{/*{{{*/
         extract($_SESSION);
 		$caller=debug_backtrace()[1]['function'];
 
-		// In order to have two parallel instances of adijoz (e.g. adijoz_plan vs adijoz_fulfill) we choose to check against the existance of adijoz.db.name file to switch databases.
-		if(is_file("adijoz.db.name")) { $db=trim(file_get_contents("adijoz.db.name")); } else { $db="adijoz"; }
+		// In order to have two parallel instances of adijoz (e.g. adijoz_plan vs adijoz_fulfill) we check against the existance of dbname.adijoz file containing the name of the database.
+		if(is_file("dbname.adijoz")) { $db=trim(file_get_contents("dbname.adijoz")); } else { $db="adijoz"; }
 		$connect=pg_connect("dbname=$db host=localhost user=".getenv("ADIJOZ_DB_USER")." password=".getenv("ADIJOZ_DB_PASS"));
 		($result=pg_query_params($connect, $qq, $arr)) || $this->reportBug(array("db error\n\ncaller: $caller()\n\n", "$qq", pg_last_error($connect)));
 		$k=pg_fetch_all($result);
