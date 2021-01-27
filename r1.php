@@ -137,7 +137,7 @@ function r2($xls=0) { #{{{
 			foreach($v as $kk=>$vv) {
 				if(!empty($vv)) { 
 					$count=count($vv);
-					$new[$id]['time_off'][$k][]="$mm: ".implode(",",$vv). " &nbsp;&nbsp;&nbsp; ($count $kk) ";
+					$new[$id]['time_off'][$k][]="$mm: ".implode(",",$vv). "  ($count $kk) ";
 				} 
 			}
 		}
@@ -181,7 +181,7 @@ function r2_to_html($collect) { #{{{
 	$html.="Wypełnili błędnie:<br><br>";
 	$html.=implode(",<br>", array_filter($faulty));
 	$html.="<br><br><br>Nie wypełnili:<br><br>";
-	$r=$_SESSION['aa']->query("select department,email from v where year=$1 and taken is null and limits!='{\"zal\":\"0\",\"wyp\":\"0\",\"dod\":\"0\",\"nz\":\"0\"}' order by department", array($_SESSION['year']));
+	$r=$_SESSION['aa']->query("select department,email from v where year=$1 and taken is null order by department", array($_SESSION['year']));
 	$html.="<table>";
 	$i=0;
 	foreach($r as $v) {
@@ -196,14 +196,11 @@ function r2_to_html($collect) { #{{{
 function r2_to_xls($collect) { #{{{
 	$lp=1;
 	$data=[];
-	$data[]=array('komórka','mundur','nazwisko i imię','zaplanował','zal', 'wyp', 'dod', 'nz', 'powinien', 'I','II','III',' IV ','V ','VI ','VII ','VIII ','IX ','X ','XI ','XII','podsumowanie');
+	$data[]=array('komórka','mundur','nazwisko i imię','zaplanował','zal.wyp', 'zal.dod', 'wyp', 'dod', 'nz', 'powinien', 'widok2');
 	foreach($collect as $k=>$v) {
 		if(!empty($v['stopien'])) { $funkcjonariusz=1; } else { $funkcjonariusz=0; }
-		$out=array($v['department'], $funkcjonariusz, $v['name'], $v['sum_user_planned_leaves'], $v['admin_planned_leaves']['zal'], $v['admin_planned_leaves']['wyp'], $v['admin_planned_leaves']['dod'], $v['admin_planned_leaves']['nz'], $v['sum_admin_planned_leaves']);
-		foreach($v['time_off'] as $mc=>$formy) {
-			$out[]=implode("\n", $formy);
-		}
-		$out[]=stanley_liczy($k)['xls'];
+		$out=array($v['department'], $funkcjonariusz, $v['name'], $v['sum_user_planned_leaves'], $v['admin_planned_leaves']['zal.wyp'], $v['admin_planned_leaves']['zal.dod'], $v['admin_planned_leaves']['wyp'], $v['admin_planned_leaves']['dod'], $v['admin_planned_leaves']['nz'], $v['sum_admin_planned_leaves']);
+		$out[]=stanley_liczy($k, $podsumowanie=0)['xls'];
 		$data[]=$out;
 	}
 	return $data;

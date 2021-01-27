@@ -86,7 +86,7 @@ function find_first_long($con_table){/*{{{*/
 			}
 	}
 }/*}}}*/
-function stanley_liczy($z_r1) { #{{{
+function stanley_liczy($z_r1, $podsumowanie=1) { #{{{
 	$time_line=fill_year($z_r1);
 	$con_table=find_continuity($time_line);
 	$con_table['dlugi_urlop']= find_first_long($con_table);
@@ -96,7 +96,7 @@ function stanley_liczy($z_r1) { #{{{
 		$html.="$v[from] - $v[to] ($v[count])<br>";
 		$xls.="$v[from] - $v[to] ($v[count])\n";
 	}
-	if(!empty($con_table['dlugi_urlop'])) { 
+	if(!empty($con_table['dlugi_urlop']) and $podsumowanie==1) { 
 		$html.="$con_table[grusza_limit]<br>";  
 		$html.="$con_table[dlugi_urlop]";  
 		$xls.="$con_table[grusza_limit]\n";  
