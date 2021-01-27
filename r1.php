@@ -161,7 +161,8 @@ function r2_to_html($collect) { #{{{
 		}
 		if(!empty($v['stopien'])) { $funkcjonariusz=1; } else { $funkcjonariusz=0; }
 		$html.="\n<tr><td>$lp<td>$v[department]<td>$funkcjonariusz<td style='white-space: nowrap'>$v[name]<td>$v[sum_user_planned_leaves]<td>".
-		$v['admin_planned_leaves']['zal'].
+			$v['admin_planned_leaves']['zal.wyp'].
+		"+".$v['admin_planned_leaves']['zal.dod'].
 		"+".$v['admin_planned_leaves']['wyp'].
 		"+".$v['admin_planned_leaves']['dod'].
 		"+".$v['admin_planned_leaves']['nz'].

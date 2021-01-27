@@ -87,6 +87,16 @@ function read_stanley() { #{{{
 }
 /*}}}*/
 function rok(){/*{{{*/ //w tym roku przestepny 29 dni w lutym
+	dd($_SESSION['year']);
+	$start_date = "$_SESSION[year]-01-01"; 
+	$days_in_a_year = date('z', strtotime("$_SESSION[year]-12-31")); // 31th of december
+	$dates=[];
+	for ($i = 0; $i < 365; $i++) {
+		$date = strtotime(date("y-m-d", strtotime($start_date)) . " +$i day");
+		$dates[]=date('m_d', $date);
+	}
+	dd($dates);
+	exit();
 	$months=array(
 		"01"=> array("01"=>0, "02"=>0, "03"=>0, "04"=>0, "05"=>0, "06"=>0, "07"=>0, "08"=>0, "09"=>0, "10"=>0, "11"=>0, "12"=>0, "13"=>0, "14"=>0, "15"=>0, "16"=>0, "17"=>0, "18"=>0, "19"=>0, "20"=>0, "21"=>0, "22"=>0, "23"=>0, "24"=>0, "25"=>0, "26"=>0, "27"=>0, "28"=>0, "29"=>0, "30"=>0, "31"=>0),
 		"02"=> array("01"=>0, "02"=>0, "03"=>0, "04"=>0, "05"=>0, "06"=>0, "07"=>0, "08"=>0, "09"=>0, "10"=>0, "11"=>0, "12"=>0, "13"=>0, "14"=>0, "15"=>0, "16"=>0, "17"=>0, "18"=>0, "19"=>0, "20"=>0, "21"=>0, "22"=>0, "23"=>0, "24"=>0, "25"=>0, "26"=>0, "27"=>0, "28"=>0, "29"=>0),
@@ -108,13 +118,13 @@ function rok(){/*{{{*/ //w tym roku przestepny 29 dni w lutym
 			$year[$key]=0;
 		}	
 	}
+	dd($year);
+	exit();
 	return $year;
 
 }/*}}}*/
 function fill_year($kto){//tworzy os czasu dni zaplanowane + dni wolne od pracy (sobota niedziela, swieta)/*{{{*/
 	$wolne=$_SESSION['aa']->db_read_holidays();
-	$r=$_SESSION['aa']->query("select name from v where user_id=$1", array($z_r1));
-	#$kto=read_stanley(); //dni zaplanowane pracownika
 	$kto=$_SESSION['collect'][$kto];
 	$time_line=rok(); //wszystkie dni w roku
 	foreach($kto['time_off'] as $k_mon=>$v){ //wstawienie zaplanowanych dni pracownika na os czasu
@@ -126,7 +136,7 @@ function fill_year($kto){//tworzy os czasu dni zaplanowane + dni wolne od pracy 
 		}
 	}
 	foreach($wolne as $w){ //wpisywanie wolnego w timeline
-		$data=explode("-",$w[0]);
+		$data=explode("-",$w);
 		$key=$data[1]."_".$data[2];
 		$time_line[$key]='wol';
 	}
