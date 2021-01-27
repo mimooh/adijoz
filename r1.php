@@ -125,17 +125,19 @@ function read_time_off() { #{{{
 }
 /*}}}*/
 function r2($xls=0) { #{{{
+	setlocale(LC_TIME, 'pl_PL.UTF-8');  
 	read_time_off();
 	$new=[];
 	foreach($_SESSION['collect'] as $id=>$data) { 
 		$new[$id]=$data;
 		$new[$id]['time_off']=array();
 		foreach($data['time_off'] as $k=>$v) {
+			$mm = strftime('%b', mktime(0, 0, 0, $k));
 			$new[$id]['time_off'][$k]=[];
 			foreach($v as $kk=>$vv) {
 				if(!empty($vv)) { 
 					$count=count($vv);
-					$new[$id]['time_off'][$k][]="($count $kk) ".implode(",",$vv);
+					$new[$id]['time_off'][$k][]="$mm: ".implode(",",$vv). " &nbsp;&nbsp;&nbsp; ($count $kk) ";
 				} 
 			}
 		}
@@ -152,23 +154,22 @@ function r2_to_html($collect) { #{{{
 	$lp=1;
 	$html='';
 	$html.="<table>";
-	$html.="\n<tr><th>lp<th>komórka<th>mundur<th>nazwisko i imię<th>zaplanował<th>zal+wyp+dod+nz<th>I<th>II<th>III<th> IV <th>V <th>VI <th>VII <th>VIII <th>IX <th>X <th>XI <th>XII<th>podsumowanie";
+	$html.="\n<tr><th>lp<th>komórka<th>nazwisko<th>zaplanował<th>zal.wyp+zal.dod+wyp+dod+nz<th>widok1<th>widok2";
 	$faulty=[];
 	foreach($collect as $k=>$v) {
 		if($v['sum_user_planned_leaves'] != $v['sum_admin_planned_leaves']) { 
 			$v['sum_user_planned_leaves']="<div style='background-color:red'>$v[sum_user_planned_leaves]</div>"; 
 			$faulty[]=$v['email'];
 		}
-		if(!empty($v['stopien'])) { $funkcjonariusz=1; } else { $funkcjonariusz=0; }
-		$html.="\n<tr><td>$lp<td>$v[department]<td>$funkcjonariusz<td style='white-space: nowrap'>$v[name]<td>$v[sum_user_planned_leaves]<td>".
+		$html.="\n<tr><td>$lp<td>$v[department]<td style='text-align:left; white-space: nowrap'>$v[name]<td>$v[sum_user_planned_leaves]<td style='text-align:left; white-space: nowrap'>".
 			$v['admin_planned_leaves']['zal.wyp'].
 		"+".$v['admin_planned_leaves']['zal.dod'].
 		"+".$v['admin_planned_leaves']['wyp'].
 		"+".$v['admin_planned_leaves']['dod'].
 		"+".$v['admin_planned_leaves']['nz'].
-		"=".$v['sum_admin_planned_leaves'];
-		foreach($v['time_off'] as $mc=>$formy) {
-			$html.="<td style='text-align:left; white-space: nowrap'>".implode("<br>",$formy);
+		"=".$v['sum_admin_planned_leaves']."<td style='text-align:left; white-space: nowrap'>";
+		foreach(array_filter($v['time_off']) as $mc=>$formy) {
+			$html.="<br>".implode("<br>",$formy);
 		}
 		$html.="<td style='text-align:left; white-space: nowrap'>";
 		$stanley=stanley_liczy($k);
