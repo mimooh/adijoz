@@ -26,50 +26,55 @@ function head() { /*{{{*/
 ";
 }
 /*}}}*/
-
-function by_departments() { /*{{{*/
+function makepdf($arr) {
+	$css=pdf_style();
+	$mpdf_setup=array('default_font_size'=>10, 'orientation'=>'P', 'margin_left'=> 25, 'margin_right'=> 25, 'margin_top'=> 25, 'margin_bottom'=> 25, 'margin_header'=> 10, 'margin_footer'=> 10);
+	pdf(array('pages'=>$arr, 'filename'=>"sonda.pdf", 'mpdf_setup'=> $mpdf_setup, 'css'=>$css));
+	exit();
+}
+function by_departments($pdf=0) { /*{{{*/
+	$map=array( '01' =>	'styczeń', '02' =>	'luty', '03' =>	'marzec', '04' =>	'kwiecień', '05' =>	'maj', '06' =>	'czerwiec', '07' =>	'lipiec', '08' =>	'sierpień', '09' =>	'wrzesień', '10' =>	'październik', '11' =>	'listopad', '12' =>	'grudzień');
 	if(empty($_GET['department'])) { return; }
-	each_day_of_year();
-	$_SESSION['each_day_department']=[];
+	$_SESSION['aa']->each_day_of_year();
+	$_SESSION['aa']->each_month_day_of_year();
+	$ddepartment=[];
 	foreach($_SESSION['aa']->query("SELECT name,leaves FROM v WHERE department~$1 AND year=$2 ORDER BY name", array($_GET['department'], $_SESSION['year'])) as $r) { 
 		$leaves=[];
-		$_SESSION['each_day_department'][$r['name']]=$_SESSION['each_day'][$_SESSION['year']];
+		$ddepartment[$r['name']]=$_SESSION['each_day'][$_SESSION['year']];
 		$leaves=json_decode($r['leaves'],1);
 		if(!empty($leaves)) { 
 			foreach($leaves as $v) {
-				$_SESSION['each_day_department'][$r['name']][$v[0]]=$v[1];
+				$ddepartment[$r['name']][$v[0]]=$v[1];
 			}
 		}
 	}
-	echo "<table>";
-	echo "\n<tr><td>date";
-	$names=array_keys($_SESSION['each_day_department']);
-	foreach($names as $name) { 
-		echo "<td>$name";
-	}
-	foreach(array_keys($_SESSION['each_day'][$_SESSION['year']]) as $day) {
-		echo "\n<tr><td><span style='white-space:nowrap'>$day</span>";
-		 
+	$wolne=array_flip($_SESSION['aa']->db_read_holidays());
+	$arr=[];
+	foreach($_SESSION['each_month_day'][$_SESSION['year']] as $month=>$days) {
+		$html_month='';
+		$html_month.="&nbsp; $_GET[department]: lista obecności na ".$map[$month]." $_SESSION[year]";
+		$html_month.="<table>";
+		$html_month.="\n<tr><td>";
+		$names=array_keys($ddepartment);
 		foreach($names as $name) { 
-			echo "<td>".$_SESSION['each_day_department'][$name][$day];
+			$html_month.="<td>$name";
 		}
+		foreach($days as $day=>$dayname) { 
+			$sty="";
+			if(isset($wolne[$day])) { $sty="style='background-color: #422'"; }
+			$html_month.="\n<tr><td $sty><div style='white-space:nowrap; text-align: left'>".substr($day,8)." $dayname</div>";
+			foreach($names as $name) { 
+				$html_month.="<td $sty>".$ddepartment[$name][$day];
+			}
+		}
+		$html_month.="</table><br><br>";
+		$arr[]=$html_month;
 	}
-	echo "</table>";
-	echo " <br> <br> <br> <br> <br> ";
+	
+	if($pdf==0) { echo implode("<br><br><br><br>", $arr); } else { makepdf($arr); }
 	exit();
 }
 
-/*}}}*/
-function each_day_of_year() {/*{{{*/
-	if(isset($_SESSION['each_day'][$_SESSION['year']])) { return; }
-	$_SESSION['each_day'][$_SESSION['year']]=array();
-	$day=strtotime($_SESSION['year']."-01-01");
-	$end=strtotime($_SESSION['year']."-12-31");
-	while($day <= $end) { 
-		$_SESSION['each_day'][$_SESSION['year']][date("Y-m-d", $day)]='';
-		$day=strtotime("+1 Day", $day);
-	}
-}
 /*}}}*/
 
 function leave_titles() { #{{{

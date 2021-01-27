@@ -215,17 +215,6 @@ function db_read() {/*{{{*/
 }
 /*}}}*/
 
-function each_day_of_year() {/*{{{*/
-	if(isset($_SESSION['each_day'][$_SESSION['year']])) { return; }
-	$_SESSION['each_day'][$_SESSION['year']]=array();
-	$day=strtotime($_SESSION['year']."-01-01");
-	$end=strtotime($_SESSION['year']."-12-31");
-	while($day <= $end) { 
-		$_SESSION['each_day'][$_SESSION['year']][date("Y-m-d", $day)]='';
-		$day=strtotime("+1 Day", $day);
-	}
-}
-/*}}}*/
 function list_departments() {/*{{{*/
 	echo "<br><br><br>By departments:<br>";
 	foreach($_SESSION['aa']->query("SELECT DISTINCT department FROM people ORDER BY department") as $r) { 
@@ -235,7 +224,7 @@ function list_departments() {/*{{{*/
 /*}}}*/
 function by_departments() { /*{{{*/
 	if(empty($_GET['department'])) { return; }
-	each_day_of_year();
+	$_SESSION['aa']->each_day_of_year();
 	$_SESSION['each_day_department']=[];
 	foreach($_SESSION['aa']->query("SELECT name,leaves FROM v WHERE department=$1 AND year=$2 ORDER BY name", array($_GET['department'], $_SESSION['year'])) as $r) { 
 		$leaves=[];

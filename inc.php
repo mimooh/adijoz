@@ -156,5 +156,30 @@ class adijoz{/*{{{*/
 		return $holidays;
 	}
 	/*}}}*/
+	public function each_day_of_year() {/*{{{*/
+		if(isset($_SESSION['each_day'][$_SESSION['year']])) { return; }
+		$_SESSION['each_day'][$_SESSION['year']]=array();
+		$day=strtotime($_SESSION['year']."-01-01");
+		$end=strtotime($_SESSION['year']."-12-31");
+		while($day <= $end) { 
+			$_SESSION['each_day'][$_SESSION['year']][date("Y-m-d", $day)]='';
+			$day=strtotime("+1 Day", $day);
+		}
+	}
+/*}}}*/
+	public function each_month_day_of_year() {/*{{{*/
+		#if(isset($_SESSION['each_month_day'][$_SESSION['year']])) { return; }
+
+		setlocale(LC_TIME, 'pl_PL.UTF-8');  
+		$_SESSION['each_month_day'][$_SESSION['year']]=array();
+		$day=strtotime($_SESSION['year']."-01-01");
+		$end=strtotime($_SESSION['year']."-12-31");
+		while($day <= $end) { 
+			$_SESSION['each_month_day'][$_SESSION['year']][date("m", $day)][date("Y-m-d", $day)]=strftime('%a', $day);
+			$day=strtotime("+1 Day", $day);
+		}
+	}
+/*}}}*/
+
 }
 
