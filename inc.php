@@ -108,11 +108,13 @@ class adijoz{/*{{{*/
 /*}}}*/
 	public function query($qq,$arr=[],$success=0) { /*{{{*/
 		// You only need to tweak pg_* functions to switch from postgres to sqlite/mysql/anything.
-
+		
         extract($_SESSION);
 		$caller=debug_backtrace()[1]['function'];
 
-		$connect=pg_connect("dbname=adijoz host=localhost user=".getenv("ADIJOZ_DB_USER")." password=".getenv("ADIJOZ_DB_PASS"));
+		// In order to have two parallel instances of adijoz (e.g. adijoz_plan vs adijoz_fulfill) we check against the existance of dbname.adijoz file containing the name of the database.
+		if(is_file("dbname.adijoz")) { $db=trim(file_get_contents("dbname.adijoz")); } else { $db="adijoz"; }
+		$connect=pg_connect("dbname=$db host=localhost user=".getenv("ADIJOZ_DB_USER")." password=".getenv("ADIJOZ_DB_PASS"));
 		($result=pg_query_params($connect, $qq, $arr)) || $this->reportBug(array("db error\n\ncaller: $caller()\n\n", "$qq", pg_last_error($connect)));
 		$k=pg_fetch_all($result);
 		if($success==1) { echo "<msg>OK</msg>"; }

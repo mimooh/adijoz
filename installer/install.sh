@@ -11,6 +11,11 @@ ADIJOZ_LOGOUT_BUTTON=''
 # Your email for DB failure notificatins, etc.
 ADIJOZ_NOTIFY="user@gmail.com"  
 
+# This variable is for the installer only, not for the environment.
+# If you need to change the database name (e.g. to have two parallel instances)
+# check inc.php query() function for how we setup $db via a file.
+ADIJOZ_DB='adijoz'  
+
 # Adijoz is meant to be integrated with a separate authentication form. By
 # default ADIJOZ_DISABLE_AUTH is ON, which lets you test the system, but allows
 # everyone to use it. You need a form which authenticates the users and sets
@@ -52,18 +57,18 @@ sudo cp $temp /etc/apache2/envvars
 rm $temp
 
 [ "X$1" == "Xclear" ] && { 
-	echo "sudo -u postgres psql -c \"DROP DATABASE adijoz\"";
+	echo "sudo -u postgres psql -c \"DROP DATABASE $ADIJOZ_DB\"";
 	echo "sudo -u postgres psql -c \"DROP USER $ADIJOZ_DB_USER\"";
 	echo "enter or ctrl+c";
 	read;
-	sudo -u postgres psql -c "DROP DATABASE adijoz";
+	sudo -u postgres psql -c "DROP DATABASE $ADIJOZ_DB";
 	sudo -u postgres psql -c "DROP USER $ADIJOZ_DB_USER";
 }
 
-sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw 'adijoz' && { 
+sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw $ADIJOZ_DB && { 
 	echo ""
-	echo "adijoz already exists in psql. You may wish to call";
-	echo "DROP DATABASE adijoz; DROP USER $ADIJOZ_DB_USER" 
+	echo "$ADIJOZ_DB already exists in psql. You may wish to call";
+	echo "DROP DATABASE $ADIJOZ_DB; DROP USER $ADIJOZ_DB_USER" 
 	echo "by running:"
 	echo ""
 	echo "	bash install.sh clear";
@@ -75,10 +80,10 @@ sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw 'adijoz' && {
 #}}}
 # psql#{{{
 sudo -u postgres psql << EOF
-CREATE DATABASE adijoz WITH ENCODING='UTF8';
+CREATE DATABASE $ADIJOZ_DB WITH ENCODING='UTF8';
 CREATE USER $ADIJOZ_DB_USER WITH PASSWORD '$ADIJOZ_DB_PASS';
 
-\c adijoz;
+\c $ADIJOZ_DB;
 
 CREATE TABLE people(
 	id serial PRIMARY KEY,
@@ -120,10 +125,10 @@ FROM people LEFT JOIN adijoz ON (people.id=adijoz.user_id);
 
 CREATE TRIGGER update_modified BEFORE UPDATE ON adijoz FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
-ALTER DATABASE adijoz OWNER TO $ADIJOZ_DB_USER;
+ALTER DATABASE $ADIJOZ_DB OWNER TO $ADIJOZ_DB_USER;
 ALTER TABLE adijoz OWNER TO $ADIJOZ_DB_USER;
 
-GRANT ALL PRIVILEGES ON DATABASE adijoz TO $ADIJOZ_DB_USER;
+GRANT ALL PRIVILEGES ON DATABASE $ADIJOZ_DB TO $ADIJOZ_DB_USER;
 GRANT ALL ON ALL TABLES IN SCHEMA public TO $ADIJOZ_DB_USER;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO $ADIJOZ_DB_USER;
 
