@@ -3,7 +3,6 @@ session_name(getenv("ADIJOZ_SESSION_NAME"));
 require_once("inc.php");
 
 # echo "select * from v where year=2021" | psql adijoz
-# echo "update adijoz set limits='{\"zal\":0,\"wyp\":24,\"dod\":15,\"nz\":0}' where year=2021" | psql adijoz
 
 function head() { /*{{{*/
 	echo "
@@ -64,27 +63,6 @@ function form_year() {/*{{{*/
 
 }
 /*}}}*/
-function db_read_holidays() {/*{{{*/
-	# psql adijoz -c "SELECT name FROM people ORDER BY name";
-	# psql adijoz -c "DELETE from adijoz";
-	# psql adijoz -c "SELECT * from adijoz";
-	# psql adijoz -c "insert into people(name) values('antonio')";
-	# user_id == -1  is admin. Whatever he had chosen as leaves will mark holidays
-	# Good for Saturdays/Sundays/religious holidays, etc.
-
-	$holidays=[];
-	$r=$_SESSION['aa']->query("SELECT leaves FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
-	if(!empty($r)) { 
-		$leaves=json_decode($r[0]['leaves'],1);
-		if(!empty($leaves)) { 
-			foreach($leaves as $v) {
-				$holidays[]=$v[0];
-			}
-		}
-	}
-	return $holidays;
-}
-/*}}}*/
 function db_read() {/*{{{*/
 	extract($_SESSION['i18n']);
 	$_SESSION['setup']=[];
@@ -101,7 +79,7 @@ function db_read() {/*{{{*/
 	$leaves=json_decode($r[0]['leaves'],1);
 	$_SESSION['setup']["summary"]=array('taken'=>$taken, 'limits'=>$limits); 
 	$_SESSION['setup']["leaves"]=$leaves;
-	$_SESSION['setup']['holidays']=db_read_holidays();
+	$_SESSION['setup']['holidays']=$_SESSION['aa']->db_read_holidays();
 	$_SESSION['setup']['user']='user';
 
 

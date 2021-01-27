@@ -132,5 +132,27 @@ class adijoz{/*{{{*/
 		return array();
     }
 	/*}}}*/
+
+	public function db_read_holidays() {/*{{{*/
+		# psql adijoz -c "SELECT name FROM people ORDER BY name";
+		# psql adijoz -c "DELETE from adijoz";
+		# psql adijoz -c "SELECT * from adijoz";
+		# psql adijoz -c "insert into people(name) values('antonio')";
+		# user_id == -1  is admin. Whatever he had chosen as leaves will mark holidays
+		# Good for Saturdays/Sundays/religious holidays, etc.
+
+		$holidays=[];
+		$r=$this->query("SELECT leaves FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
+		if(!empty($r)) { 
+			$leaves=json_decode($r[0]['leaves'],1);
+			if(!empty($leaves)) { 
+				foreach($leaves as $v) {
+					$holidays[]=$v[0];
+				}
+			}
+		}
+		return $holidays;
+	}
+	/*}}}*/
 }
 
