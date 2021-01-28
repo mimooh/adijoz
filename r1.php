@@ -28,13 +28,14 @@ function head() { /*{{{*/
 /*}}}*/
 function makepdf($arr) {
 	$css=pdf_style();
-	$mpdf_setup=array('default_font_size'=>10, 'orientation'=>'P', 'margin_left'=> 25, 'margin_right'=> 25, 'margin_top'=> 25, 'margin_bottom'=> 25, 'margin_header'=> 10, 'margin_footer'=> 10);
+	$mpdf_setup=array('default_font_size'=>10, 'orientation'=>'P', 'margin_left'=> 10, 'margin_right'=> 10, 'margin_top'=> 15, 'margin_bottom'=> 15, 'margin_header'=> 10, 'margin_footer'=> 10);
 	pdf(array('pages'=>$arr, 'filename'=>"sonda.pdf", 'mpdf_setup'=> $mpdf_setup, 'css'=>$css));
 	exit();
 }
-function by_departments($pdf=0) { /*{{{*/
-	$map=array( '01' =>	'styczeń', '02' =>	'luty', '03' =>	'marzec', '04' =>	'kwiecień', '05' =>	'maj', '06' =>	'czerwiec', '07' =>	'lipiec', '08' =>	'sierpień', '09' =>	'wrzesień', '10' =>	'październik', '11' =>	'listopad', '12' =>	'grudzień');
+function by_departments() { /*{{{*/
 	if(empty($_GET['department'])) { return; }
+	if(isset($_GET['pdf'])) { $pdf=1; } else { $pdf=0; }
+	$map=array( '01' =>	'styczeń', '02' =>	'luty', '03' =>	'marzec', '04' =>	'kwiecień', '05' =>	'maj', '06' =>	'czerwiec', '07' =>	'lipiec', '08' =>	'sierpień', '09' =>	'wrzesień', '10' =>	'październik', '11' =>	'listopad', '12' =>	'grudzień');
 	$_SESSION['aa']->each_day_of_year();
 	$_SESSION['aa']->each_month_day_of_year();
 	$ddepartment=[];
@@ -50,26 +51,53 @@ function by_departments($pdf=0) { /*{{{*/
 	}
 	$wolne=array_flip($_SESSION['aa']->db_read_holidays());
 	$arr=[];
-	foreach($_SESSION['each_month_day'][$_SESSION['year']] as $month=>$days) {
-		$html_month='';
-		$html_month.="&nbsp; $_GET[department]: lista obecności na ".$map[$month]." $_SESSION[year]";
-		$html_month.="<table>";
-		$html_month.="\n<tr><td>";
-		$names=array_keys($ddepartment);
-		foreach($names as $name) { 
-			$html_month.="<td>$name";
-		}
-		foreach($days as $day=>$dayname) { 
-			$sty="";
-			if(isset($wolne[$day])) { $sty="style='background-color: #422'"; }
-			$html_month.="\n<tr><td $sty><div style='white-space:nowrap; text-align: left'>".substr($day,8)." $dayname</div>";
-			foreach($names as $name) { 
-				$html_month.="<td $sty>".$ddepartment[$name][$day];
-			}
-		}
-		$html_month.="</table><br><br>";
-		$arr[]=$html_month;
+	if($pdf==1) {
+		$dark_sty="style='background-color: #bbb;'";
+	} else {
+		$dark_sty="style='background-color: #333;'";
 	}
+	foreach($_SESSION['each_month_day'][$_SESSION['year']] as $month=>$days) {
+		if(isset($_GET['month']) && $_GET['month']!=$month) { continue; }
+		if($pdf==1) {
+			$names_chunks=array_chunk(array_keys($ddepartment), 9);
+		} else {
+			$names_chunks=[array_keys($ddepartment)];
+		}
+		foreach($names_chunks as $names) {
+			$html_month="";
+			$html_month.="$_GET[department]";
+			$html_month.="<table>";
+			$html_month.="\n<tr><td text-rotate='90'><div style='padding-top:5px'>".$map[$month]."</div>";
+			foreach($names as $name) { 
+				$n=explode(" ", $name);
+				$n[0]=preg_replace("/-.*/", "", $n[0]);
+				if($pdf==1) {
+					$html_month.="<td style='width:70px'> <table style='border: 0px solid #fff;'> <tr style='border: 0px solid #fff;' text-rotate='90'> <td style='border: 0px solid #fff;'>$n[0]</td> <td style='border: 0px solid #fff;'>$n[1]</td> </tr> </table>";
+				} else {
+					$html_month.="<td> $name";
+				}
+			}
+			foreach($days as $day=>$dayname) { 
+				$sty="";
+				if(isset($wolne[$day])) { $sty=$dark_sty; }
+				$html_month.="\n<tr><td $sty><div style='white-space:nowrap; text-align: left'>".substr($day,8)."&nbsp;$dayname</div>";
+				foreach($names as $name) { 
+					if(!empty($ddepartment[$name][$day])) { 
+						if($pdf==1) {
+							$html_month.="<td style='background-color: #ddd'>";
+						} else {
+							$html_month.="<td style='color: #888'>".$ddepartment[$name][$day];
+						}
+					} else {
+						$html_month.="<td $sty>";
+					}
+				}
+			}
+			$html_month.="</table><br><br>";
+			$arr[]=$html_month;
+		}
+	}
+	if(isset($_GET['all_departments'])) { return $arr; }
 	
 	if($pdf==0) { echo implode("<br><br><br><br>", $arr); } else { makepdf($arr); }
 	exit();
@@ -211,16 +239,40 @@ function r2_to_xls($collect) { #{{{
 	return $data;
 }
 /*}}}*/
+function menu() {/*{{{*/
+	$map=array( '01' =>	'styczeń', '02' =>	'luty', '03' =>	'marzec', '04' =>	'kwiecień', '05' =>	'maj', '06' =>	'czerwiec', '07' =>	'lipiec', '08' =>	'sierpień', '09' =>	'wrzesień', '10' =>	'październik', '11' =>	'listopad', '12' =>	'grudzień');
+	echo "<br><a class=blink href=?r2>Raport</a> ";
+	echo "Listy: ";
+	foreach($map as $k=>$v) {
+		echo "<a class=blink href=?all_departments&month=$k&pdf=1>$v</a>";
+	}
+}
+/*}}}*/
+function all_departments() {/*{{{*/
+	if(!isset($_GET['all_departments'])) { return; }
+	$arr=array('RA-1/1', 'RA-1/2', 'RA-2', 'RA-3', 'RA-4', 'RA-5', 'RA-6', 'RA-7', 'RK-1', 'RK-2', 'RK-3', 'RK-4', 'RK-5', 'RN-1', 'RN-2', 'RN-3', 'RN-4', 'RN-5', 'RO-1', 'RO-3', 'RO-4', 'RO-5', 'RO-6', 'RR-1', 'RR-2', 'RR-3', 'RR-4', 'RR-5', 'RR-6', 'RR-7', 'RR-8', 'RR-9', 'RW-1/1', 'RW-1/2', 'RW-1/3', 'RW-1/4', 'RW-2/1', 'RW-2/2', 'RW-2/3', 'RW-2/4', 'RW-3/1', 'RW-3/2', 'RW-3/3', 'RW-4/1', 'RW-4/2', 'RW-5/1', 'RW-5/2', 'RW-5/3', 'RW-6/1', 'RW-6/2', 'RW-6/3', 'RW-7/1', 'RW-7/2', 'RW-7/3', 'RW-10', 'RW-11', 'RW-12');
+	#$arr=array('RA-1/1', 'RA-1/2', 'RA-2');
+	$pages=[];
+	foreach($arr as $k=>$v) {
+		$_GET['department']=$v;
+		$pages=array_merge($pages,by_departments());
+	}
+	makepdf($pages);
+	exit();
+}
+/*}}}*/
 function main() { /*{{{*/
 	# echo "select leaves from adijoz where user_id=716" | psql adijoz
 	leave_titles();
 	if(isset($_GET['xls'])) { $data=r2($xls=1); xls($data, "sonda.xlsx"); exit(); }
 	head();
+	all_departments();
 	by_departments();
-	#read_time_off(); //stanley - do usuniecia
-	#exit();
-	echo r2();
-	dd("Błędy pod gruszą", $_SESSION['grusza_errors']);
+	menu();
+	if(isset($_GET['r2'])) { 
+		echo r2();
+		dd("Błędy pod gruszą", $_SESSION['grusza_errors']);
+	}
 }
 /*}}}*/
 main();
