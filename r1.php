@@ -67,7 +67,7 @@ function by_departments() { /*{{{*/
 			$html_month="";
 			$html_month.="$_GET[department]";
 			$html_month.="<table>";
-			$html_month.="\n<tr><td text-rotate='90'><div style='padding-top:5px'>".$map[$month]."</div>";
+			$html_month.="\n<tr><td><table style='border: 0px solid #fff;'> <tr style='border: 0px solid #fff;' text-rotate='90'> <td style='border: 0px solid #fff;'>".$map[$month]."</td> <td style='border: 0px solid #fff;'>$_SESSION[year]</td> </tr> </table>";
 			foreach($names as $name) { 
 				$n=explode(" ", $name);
 				$n[0]=preg_replace("/-.*/", "", $n[0]);
@@ -207,7 +207,6 @@ function r2_to_html($collect) { #{{{
 		$html.="<td style='text-align:left; white-space: nowrap'>";
 		$stanley=stanley_liczy($k);
 		$html.=$stanley['html'];
-		#dd($stanley['raw']);
 		$lp++;
 	}
 	$html.="</table><br><br>";
@@ -270,6 +269,7 @@ function main() { /*{{{*/
 	by_departments();
 	menu();
 	if(isset($_GET['r2'])) { 
+		echo "<br><div style='background-color: red'>Widok2 zawiera błędy, w budowie</div>";
 		echo r2();
 		dd("Błędy pod gruszą", $_SESSION['grusza_errors']);
 	}
