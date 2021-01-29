@@ -67,7 +67,7 @@ function find_continuity($time_line){/*{{{*/
 		if(!empty($type) and $found==1){ //znalazłem kolejny wpis w serii
 			$temp_table[$date]=$type;
 		}
-		if(empty($type) and $found==1){ //ten wpis juz nie w serii
+		if((empty($type) || $date=='12_31') and $found==1 ){ //ten wpis juz nie w serii
 			$new_temp=remove_holiday_at_end($temp_table); //usun z konca dni swiateczne
 			$con_table['zakresy'][]=make_con_table($new_temp, $count);//dodaj znaleziona serie do duzej listy
 			$count=0;
@@ -86,8 +86,8 @@ function find_first_long($con_table){/*{{{*/
 			}
 	}
 }/*}}}*/
-function stanley_liczy($z_r1, $podsumowanie=1) { #{{{
-	$time_line=fill_year($z_r1);
+function stanley_liczy($user_id, $podsumowanie=1) { #{{{
+	$time_line=fill_year($user_id);
 	$con_table=find_continuity($time_line);
 	$con_table['dlugi_urlop']= find_first_long($con_table);
 	$html='';
@@ -102,7 +102,7 @@ function stanley_liczy($z_r1, $podsumowanie=1) { #{{{
 		$xls.="$con_table[grusza_limit]\n";  
 		$xls.="$con_table[dlugi_urlop]";  
 	} else {
-		$r=$_SESSION['aa']->query("select name from v where user_id=$1", array($z_r1));
+		$r=$_SESSION['aa']->query("select name from v where user_id=$1", array($user_id));
 		$_SESSION['grusza_errors'][]=$r[0]['name'];
 	}
 
