@@ -105,8 +105,7 @@ function calendar_submitter() {/*{{{*/
 
 	$submitter='';
 
-
-	if(empty($_SESSION['adijoz_admin']) || isset($_GET['adijoz_plain_user'])) { 
+	if(isset($_GET['adijoz_plain_user'])) { 
 		$submitter="<table style='width:1px'> <tr> <th>$i18n_I_am_planning<th> $titles </table>";
 		if($block==1) { 
 			$submitter.="Blocked";
@@ -118,6 +117,13 @@ function calendar_submitter() {/*{{{*/
 			$submitter.="</div><br>";
 		}
 	}
+	if(!empty($_SESSION['adijoz_admin'])) { 
+		$submitter="<table style='width:1px'> <tr> <th>$i18n_I_am_planning<th> $titles </table>";
+		$submitter.="<div style='display:inline-block'>";
+		$submitter.="<input id=adijoz_submit value=$i18n_submit type=submit>";
+		$submitter.="</div><br>";
+	}
+
 	return $submitter;
 
 }
