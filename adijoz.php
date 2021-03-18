@@ -29,9 +29,13 @@ function make_year() {/*{{{*/
 		$_SESSION['year']=2021;
 	}
 
+	// Convention: '2021' is the real holidays, and '21' is an extra set, perhaps a plan of the year '2021'
+	// Therefore we have this '21' and '2021' years situation
+	if(strlen($_SESSION['year'])==2) { $year="20$_SESSION[year]"; } else { $year=$_SESSION['year']; }
+
 	echo "
 	<script type='text/javascript'>
-		var year=".$_SESSION['year'].";
+		var year=$year;
 	</script>
 	";
 }
