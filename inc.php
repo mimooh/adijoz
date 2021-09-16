@@ -5,28 +5,6 @@ ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
 $_SESSION['aa']=new adijoz();
 
-# debug/*{{{*/
-
-function dd() {
-	// Just a debugging function
-	if($_SESSION['console']==1) { 
-		foreach(func_get_args() as $v) {
-			$out=print_r($v,1);
-			echo $out;
-		}
-		echo "\n";
-	} else {
-		foreach(func_get_args() as $v) {
-			echo "<pre>";
-			$out=print_r($v,1);
-			echo htmlspecialchars($out);
-			echo "</pre>";
-		}
-		echo "<br><br>";
-	}
-}
-/*}}}*/
-
 class adijoz{/*{{{*/
 	// On init we load all messages from messages/en.csv. This way we don't have missing texts in case translations are not complete.
 	// Then messages/$language.csv is loaded to replace some/all en strings.
