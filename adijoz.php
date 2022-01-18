@@ -25,8 +25,8 @@ function make_year() {/*{{{*/
 		$_SESSION['year']=$_REQUEST['change_year'];
 	} 
 	if(empty($_SESSION['year'])) { 
-		#$_SESSION['year']=date('Y');
-		$_SESSION['year']=2021;
+		$_SESSION['year']=date('Y');
+		#$_SESSION['year']=2021;
 	}
 
 	// Convention: '2021' is the real holidays, and '21' is an extra set, perhaps a plan of the year '2021'
