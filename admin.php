@@ -50,15 +50,14 @@ function form_limits() { /*{{{*/
 
 	$ii=1;
 	foreach($_SESSION['aa']->query("SELECT * FROM v WHERE year=$1 ORDER BY department,name", array($_SESSION['year'])) as $r) { 
-		$zeroes=array();
-		foreach(array_keys($titles) as $k) { 
-			$zeroes[$k]=0;
-		}
 		$limits=json_decode($r['limits'],1);
 		$taken=json_decode($r['taken'],1);
 
-		if(empty($limits))     { $limits=$zeroes; }
-		if(empty($taken))      { $taken=$zeroes; }
+		foreach($titles as $k=>$v) { 
+			if(empty($limits[$k])) { $limits[$k]=0; }
+			if(empty($taken[$k]))  { $taken[$k]=0; }
+		}
+
 		if(empty($r['block'])) { $r['block']=0; }
 
 		echo "<tr><td>$ii";
