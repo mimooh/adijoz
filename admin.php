@@ -46,7 +46,7 @@ function form_limits() { /*{{{*/
 	echo "
 	<form method=post> 
 	<table> 
-	<tr><th>nr<th>block<help title='".$i18n_meaning_of_block."'></help><th>department<th>name<th colspan=2>".join("<th colspan=2>",$titles);
+	<tr><th>nr<th>block<help title='".$i18n_meaning_of_block."'></help><th>department<th>name<th colspan=3>".join("<th colspan=3>",$titles);
 
 	$ii=1;
 	foreach($_SESSION['aa']->query("SELECT * FROM v WHERE year=$1 ORDER BY department,name", array($_SESSION['year'])) as $r) { 
@@ -66,11 +66,12 @@ function form_limits() { /*{{{*/
 		echo "<td>$r[department]";
 		echo "<td><span style='white-space:nowrap'><a class=rlink target=_ href='adijoz.php?id=$r[user_id]'>$r[name] ($r[user_id])</a></span>";
 		$bg="";
-		foreach($limits as $k=>$i) { 
+
+		foreach(array_keys($titles) as $k) { 
 			if($taken[$k] > $limits[$k]) { $bg="style='background-color: #a00'"; }
 			if($taken[$k] < $limits[$k]) { $bg="style='background-color: #08a'"; }
 
-			echo "<td><input autocomplete=off size=2 value=$i name=collect_limits[$r[user_id]][$k]><td $bg>".$taken[$k];
+			echo "<td style='padding-left:40px; opacity:0.3'>$k<td><input autocomplete=off size=2 value=".$limits[$k]." name=collect_limits[$r[user_id]][$k]><td $bg>".$taken[$k];
 			$bg="";
 		}
 		$ii++;
