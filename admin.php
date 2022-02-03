@@ -31,6 +31,7 @@ function menu() {/*{{{*/
 	</form>
 	<a class=blink href=?limits_view>Limits View</a> 
 	<a class=blink href=?department>Departments View</a> 
+	<a class=blink href=?summary>Summary</a> 
 	";
 }
 /*}}}*/
@@ -59,6 +60,8 @@ function form_limits() { /*{{{*/
 		}
 
 		if(empty($r['block'])) { $r['block']=0; }
+		if(isset($_GET['block_all']) && $_GET['block_all']==1) { $r['block']=1; }
+		if(isset($_GET['block_all']) && $_GET['block_all']==0) { $r['block']=0; }
 
 		echo "<tr><td>$ii";
 		echo "<td><input autocomplete=off class=block_$r[block] type=text name=block[$r[user_id]] value='$r[block]' size=1>";
@@ -78,12 +81,63 @@ function form_limits() { /*{{{*/
 
 	echo "
 	</table>
-		<input type=submit value='OK'>
+		<input type=submit value='save'>
+		<a class=blink href=?limits_view&block_all=1>block=1 view (must then save!)</a> 
+		<a class=blink href=?limits_view&block_all=0>block=0 view (must then save!)</a> 
+
 		<help title='".$i18n_admin_submit_year."'></help>
 	<br><br>
 	</form>
 	";
 
+}
+/*}}}*/
+function summary() { /*{{{*/
+	if(!isset($_GET['summary'])) { return; }
+	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
+	$titles=[];
+	foreach($conf as $t) {
+		$titles[$t[0]]=$t[1];
+	}
+
+	$stats=['err'=>[], 'ok'=>[] ];
+	foreach($_SESSION['aa']->query("SELECT * FROM v WHERE year=$1 ORDER BY department,name", array($_SESSION['year'])) as $r) { 
+		$limits=json_decode($r['limits'],1);
+		$taken=json_decode($r['taken'],1);
+
+		foreach($titles as $k=>$v) { 
+			if(empty($limits[$k])) { $limits[$k]=0; }
+			if(empty($taken[$k]))  { $taken[$k]=0; }
+		}
+		$err=0;
+		foreach($limits as $k=>$i) { 
+			if($k != 'nz') { // yeah, some special case in our institution only (hopefully)
+				if($taken[$k] != $limits[$k]) { $err=1; }
+			}
+		}
+		if($err==1) {
+			$stats['err'][]="$r[department]<td>$r[name]";
+		} else {
+			$stats['ok'][]="$r[department]<td>$r[name]";
+		}
+	}
+	echo "<table><tr><th>nr<th>department<th>name<th>err";
+	$ii=1;
+	foreach($stats['err'] as $v) {
+		echo "<tr><td>$ii<td>$v<td>1";
+		$ii++;
+	}
+	echo "</table>";
+
+	echo "<table><tr><th>nr<th>department<th>name<th>err";
+	$ii=1;
+	foreach($stats['ok'] as $v) {
+		echo "<tr><td>$ii<td>$v<td>0";
+		$ii++;
+	}
+	echo "</table>";
+
+	exit();
 }
 /*}}}*/
 function submit_calendar() { /*{{{*/
@@ -271,6 +325,7 @@ function main() { /*{{{*/
 	submit_calendar();
 	db_read();
 	menu();
+	summary();
 	if(isset($_GET['limits_view'])) { 
 		form_limits();
 		form_calendar();
