@@ -31,7 +31,7 @@ function menu() {/*{{{*/
 	</form>
 	<a class=blink href=?limits_view>Limits View</a> 
 	<a class=blink href=?department>Departments View</a> 
-	<a class=blink href=?summary>Summary</a> 
+	<a class=blink href=?errors>Errors</a> 
 	";
 }
 /*}}}*/
@@ -92,8 +92,8 @@ function form_limits() { /*{{{*/
 
 }
 /*}}}*/
-function summary() { /*{{{*/
-	if(!isset($_GET['summary'])) { return; }
+function errors() { /*{{{*/
+	if(!isset($_GET['errors'])) { return; }
 	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
 	$titles=[];
 	foreach($conf as $t) {
@@ -325,7 +325,7 @@ function main() { /*{{{*/
 	submit_calendar();
 	db_read();
 	menu();
-	summary();
+	errors();
 	if(isset($_GET['limits_view'])) { 
 		form_limits();
 		form_calendar();
