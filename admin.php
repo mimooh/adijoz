@@ -81,9 +81,9 @@ function form_limits() { /*{{{*/
 
 	echo "
 	</table>
-		<input type=submit value='save'>
-		<a class=blink href=?limits_view&block_all=1>block=1 view (must then save!)</a> 
-		<a class=blink href=?limits_view&block_all=0>block=0 view (must then save!)</a> 
+		<input type=submit value='Save'>
+		<a class=blink href=?limits_view&block_all=1>BlockAll 1</a> 
+		<a class=blink href=?limits_view&block_all=0>BlockAll 0</a> 
 
 		<help title='".$i18n_admin_submit_year."'></help>
 	<br><br>
