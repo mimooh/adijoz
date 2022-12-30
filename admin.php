@@ -38,7 +38,7 @@ function menu() {/*{{{*/
 function form_limits() { /*{{{*/
 	extract($_SESSION['i18n']);
 
-	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
+	$conf=json_decode(file_get_contents("conf.json") ?? '',1)['leave_titles'];
 	$titles=[];
 	foreach($conf as $t) {
 		$titles[$t[0]]=$t[1];
@@ -51,8 +51,8 @@ function form_limits() { /*{{{*/
 
 	$ii=1;
 	foreach($_SESSION['aa']->query("SELECT * FROM v WHERE year=$1 ORDER BY department,name", array($_SESSION['year'])) as $r) { 
-		$limits=json_decode($r['limits'],1);
-		$taken=json_decode($r['taken'],1);
+		$limits=json_decode($r['limits'] ?? '',1);
+		$taken=json_decode($r['taken'] ?? '',1);
 
 		foreach($titles as $k=>$v) { 
 			if(empty($limits[$k])) { $limits[$k]=0; }
@@ -94,7 +94,7 @@ function form_limits() { /*{{{*/
 /*}}}*/
 function errors() { /*{{{*/
 	if(!isset($_GET['errors'])) { return; }
-	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
+	$conf=json_decode(file_get_contents("conf.json") ?? '',1)['leave_titles'];
 	$titles=[];
 	foreach($conf as $t) {
 		$titles[$t[0]]=$t[1];
@@ -102,8 +102,8 @@ function errors() { /*{{{*/
 
 	$stats=['err'=>[], 'ok'=>[] ];
 	foreach($_SESSION['aa']->query("SELECT * FROM v WHERE year=$1 ORDER BY department,name", array($_SESSION['year'])) as $r) { 
-		$limits=json_decode($r['limits'],1);
-		$taken=json_decode($r['taken'],1);
+		$limits=json_decode($r['limits'] ?? '',1);
+		$taken=json_decode($r['taken'] ?? '',1);
 
 		foreach($titles as $k=>$v) { 
 			if(empty($limits[$k])) { $limits[$k]=0; }
@@ -142,7 +142,7 @@ function errors() { /*{{{*/
 /*}}}*/
 function submit_calendar() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
-	$collect=json_decode($_REQUEST['collect'],1);
+	$collect=json_decode($_REQUEST['collect'] ?? '',1);
 
 	foreach($collect['leaves'] as $key => $row) {
 		$date[$key] = $row[0];
@@ -183,7 +183,7 @@ function init_year() {/*{{{*/
 	$r=$_SESSION['aa']->query("SELECT * FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
 	if(!empty($r)) { return; }
 
-	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
+	$conf=json_decode(file_get_contents("conf.json") ?? '',1)['leave_titles'];
 	foreach($conf as $t) {
 		$taken[$t[0]]=0;
 	}
@@ -239,16 +239,16 @@ function db_read() {/*{{{*/
 	extract($_SESSION['i18n']);
 	$_SESSION['setup']=[];
 	$_SESSION['setup']['titles']=[];
-	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
+	$conf=json_decode(file_get_contents("conf.json") ?? '',1)['leave_titles'];
 	foreach($conf as $t) {
 		$_SESSION['setup']['titles'][$t[0]]=$t[1];
 	}
 
 	$r=$_SESSION['aa']->query("SELECT taken,limits,leaves FROM adijoz WHERE user_id=-1 AND year=$1", array($_SESSION['year']));
 	if(empty($r)) { die("$i18n_year_not_prepared ".$_SESSION['year']); }
-	$taken=json_decode($r[0]['taken'],1);
-	$limits=json_decode($r[0]['limits'],1);
-	$leaves=json_decode($r[0]['leaves'],1);
+	$taken=json_decode($r[0]['taken'] ?? '',1);
+	$limits=json_decode($r[0]['limits'] ?? '',1);
+	$leaves=json_decode($r[0]['leaves'] ?? '',1);
 	$_SESSION['setup']["summary"]=array('taken'=>$taken, 'limits'=>$limits); 
 	$_SESSION['setup']["leaves"]=$leaves;
 	$_SESSION['setup']["user"]="admin";
@@ -283,7 +283,7 @@ function by_departments() { /*{{{*/
 	foreach($_SESSION['aa']->query("SELECT name,leaves FROM v WHERE department=$1 AND year=$2 ORDER BY name", array($_GET['department'], $_SESSION['year'])) as $r) { 
 		$leaves=[];
 		$_SESSION['each_day_department'][$r['name']]=$_SESSION['each_day'][$_SESSION['year']];
-		$leaves=json_decode($r['leaves'],1);
+		$leaves=json_decode($r['leaves'] ?? '',1);
 		if(!empty($leaves)) { 
 			foreach($leaves as $v) {
 				$_SESSION['each_day_department'][$r['name']][$v[0]]=$v[1];

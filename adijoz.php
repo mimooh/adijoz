@@ -42,7 +42,7 @@ function make_year() {/*{{{*/
 /*}}}*/
 function submit_calendar() { /*{{{*/
 	if(empty($_REQUEST['collect'])) { return; }
-	$collect=json_decode($_REQUEST['collect'],1);
+	$collect=json_decode($_REQUEST['collect'] ?? '',1);
 
 	foreach($collect['leaves'] as $key => $row) {
 		$date[$key] = $row[0];
@@ -71,16 +71,16 @@ function db_read() {/*{{{*/
 	extract($_SESSION['i18n']);
 	$_SESSION['setup']=[];
 	$_SESSION['setup']['titles']=[];
-	$conf=json_decode(file_get_contents("conf.json"),1)['leave_titles'];
+	$conf=json_decode(file_get_contents("conf.json") ?? '',1)['leave_titles'];
 	foreach($conf as $t) {
 		$_SESSION['setup']['titles'][$t[0]]=$t[1];
 	}
 
 	$r=$_SESSION['aa']->query("SELECT taken,limits,leaves FROM v WHERE user_id=$1 AND year=$2", array($_SESSION['user_id'], $_SESSION['year']));
 	if(empty($r)) { die("$i18n_year_not_prepared ".$_SESSION['year']); }
-	$taken=json_decode($r[0]['taken'],1);
-	$limits=json_decode($r[0]['limits'],1);
-	$leaves=json_decode($r[0]['leaves'],1);
+	$taken=json_decode($r[0]['taken'] ?? '',1);
+	$limits=json_decode($r[0]['limits'] ?? '',1);
+	$leaves=json_decode($r[0]['leaves'] ?? '',1);
 	$_SESSION['setup']["summary"]=array('taken'=>$taken, 'limits'=>$limits); 
 	$_SESSION['setup']["leaves"]=$leaves;
 	$_SESSION['setup']['holidays']=$_SESSION['aa']->db_read_holidays();
